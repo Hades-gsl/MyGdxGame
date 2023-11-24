@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -140,6 +139,7 @@ public class GameScreen implements Screen {
     bulletUpdater = new BulletUpdater(bullets, heroes, enemies);
   }
 
+  // start thread
   private void start() {
     executor =
         new ScheduledThreadPoolExecutor(Constants.INIT_ENEMY_COUNT + Constants.INIT_HERO_COUNT + 1);
@@ -166,7 +166,9 @@ public class GameScreen implements Screen {
 
     camera.update();
 
-    drawMap();
+    shapeRenderer.setProjectionMatrix(camera.combined);
+    map.render(shapeRenderer);
+    shapeRenderer.end();
 
     game.batch.setProjectionMatrix(camera.combined);
     game.batch.begin();
@@ -193,36 +195,6 @@ public class GameScreen implements Screen {
       }
     }
     return true;
-  }
-
-  private void drawMap() {
-    shapeRenderer.setProjectionMatrix(camera.combined);
-
-    shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-    for (int i = 0; i < Constants.ROWS; i++) {
-      for (int j = 0; j < Constants.COLS; j++) {
-        float x = i * Constants.CELL_SIZE;
-        float y = j * Constants.CELL_SIZE;
-
-        if ((i + j) % 2 == 0) {
-          shapeRenderer.setColor(Color.LIGHT_GRAY);
-        } else {
-          shapeRenderer.setColor(Color.DARK_GRAY);
-        }
-
-        shapeRenderer.rect(x, y, Constants.CELL_SIZE, Constants.CELL_SIZE);
-      }
-    }
-
-    shapeRenderer.setColor(Color.SLATE);
-    shapeRenderer.rectLine(
-        Constants.ROWS / 2 * Constants.CELL_SIZE,
-        0,
-        Constants.ROWS / 2 * Constants.CELL_SIZE,
-        Constants.MAP_HEIGHT,
-        Constants.BORDER_WIDTH);
-
-    shapeRenderer.end();
   }
 
   private void drawEntity() {
