@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.bullet.Bullet;
 import com.mygdx.bullet.BulletUpdater;
 import com.mygdx.character.Character;
@@ -42,6 +43,7 @@ public class GameScreen implements Screen {
   private final Music bgm;
   private ScheduledThreadPoolExecutor executor;
   private BulletUpdater bulletUpdater;
+  private long lastTime = TimeUtils.millis();
 
   public GameScreen(MyGdxGame game) {
     this.game = game;
@@ -292,9 +294,11 @@ public class GameScreen implements Screen {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-      if (currentHero == null) {
+      if (currentHero == null || TimeUtils.millis() - lastTime < Constants.INTERVAL_MILLI) {
         return false;
       }
+
+      lastTime = TimeUtils.millis();
 
       Vector3 v3 = new Vector3(screenX, screenY, 0);
       camera.unproject(v3);
