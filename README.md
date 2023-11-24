@@ -39,4 +39,9 @@
 
 ## 3. 演示视频
 
-https://www.bilibili.com/video/BV1na4y1Z7FN/
+    https://www.bilibili.com/video/BV1na4y1Z7FN/
+
+
+# Phase2: 构建
+
+项目基于Gradle进行构建，在项目根目录下执行`./gradlew desktop:dist`即可构建项目，构建结果在`desktop/build/libs`目录下。
