@@ -24,7 +24,7 @@ public class Character extends Entity {
 
     this.charaterTexture = charactorTexture;
     this.bulletTexture = bulletTexture;
-    this.dieTexture = new Texture(Gdx.files.internal("people/die.png"));
+    this.dieTexture = new Texture(Gdx.files.internal(Constants.DIE_PATH));
   }
 
   public void attack(Character enemy, List<Bullet> bullets) {

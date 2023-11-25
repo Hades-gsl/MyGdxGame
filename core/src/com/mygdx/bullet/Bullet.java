@@ -30,7 +30,7 @@ public class Bullet extends Entity {
     this.speedY = speedY;
     getSprite().setRotation(rotation);
 
-    sound = Gdx.audio.newSound(Gdx.files.internal("sound/bullet.mp3"));
+    sound = Gdx.audio.newSound(Gdx.files.internal(Constants.SHOOT_PATH));
 
     Gdx.app.log("Bullet", "x: " + x + ", y: " + y + ", rotation: " + rotation);
   }

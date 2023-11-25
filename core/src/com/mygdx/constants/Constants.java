@@ -24,4 +24,11 @@ public class Constants {
   public static final int INTERVAL_MILLI = 2000;
   public static final int BORDER_WIDTH = 3;
   public static final Color BACKGROUND_COLOR = Color.TEAL;
+  public static final String HERO_PATH = "people/hero";
+  public static final String ENEMY_PATH = "people/enemy";
+  public static final String BULLET_PATH = "bullet.png";
+  public static final String DIE_PATH = "people/die.png";
+  public static final String WIN_PATH = "sound/win.mp3";
+  public static final String BGM_PATH = "sound/bgm.mp3";
+  public static final String SHOOT_PATH = "sound/bullet.mp3";
 }

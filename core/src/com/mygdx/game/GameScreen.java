@@ -66,7 +66,7 @@ public class GameScreen implements Screen {
     currentHero.setAI(false);
     Gdx.input.setInputProcessor(new InputHandler());
 
-    bgm = Gdx.audio.newMusic(Gdx.files.internal("sound/bgm.mp3"));
+    bgm = Gdx.audio.newMusic(Gdx.files.internal(Constants.BGM_PATH));
     bgm.setLooping(true);
     bgm.play();
 
@@ -78,11 +78,11 @@ public class GameScreen implements Screen {
     enemyTextures = new CopyOnWriteArrayList<>();
 
     for (int i = 1; i <= Constants.CHARACTER_COUNT; i++) {
-      heroTextures.add(new Texture(Gdx.files.internal("people/hero (" + i + ").png")));
-      enemyTextures.add(new Texture(Gdx.files.internal("people/enemy (" + i + ").png")));
+      heroTextures.add(new Texture(Gdx.files.internal(Constants.HERO_PATH + " (" + i + ").png")));
+      enemyTextures.add(new Texture(Gdx.files.internal(Constants.ENEMY_PATH + " (" + i + ").png")));
     }
 
-    bulletTexture = new Texture(Gdx.files.internal("bullet.png"));
+    bulletTexture = new Texture(Gdx.files.internal(Constants.BULLET_PATH));
   }
 
   private void initMap() {

@@ -43,7 +43,7 @@ public class ResultsScreen implements Screen {
 
     draw();
 
-    Music music = Gdx.audio.newMusic(Gdx.files.internal("sound/win.mp3"));
+    Music music = Gdx.audio.newMusic(Gdx.files.internal(Constants.WIN_PATH));
     music.play();
   }
 
