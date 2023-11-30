@@ -18,6 +18,7 @@ import com.mygdx.character.Character;
 import com.mygdx.character.Enemy;
 import com.mygdx.character.Hero;
 import com.mygdx.constants.Constants;
+import com.mygdx.entity.Entity;
 import com.mygdx.matrix.Map;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -145,13 +146,16 @@ public class GameScreen implements Screen {
   private void start() {
     executor =
         new ScheduledThreadPoolExecutor(Constants.INIT_ENEMY_COUNT + Constants.INIT_HERO_COUNT + 1);
-    for (Hero hero : heroes) {
-      executor.scheduleWithFixedDelay(hero, 0, Constants.INTERVAL_MILLI, TimeUnit.MILLISECONDS);
-    }
 
-    for (Enemy enemy : enemies) {
-      executor.scheduleWithFixedDelay(enemy, 0, Constants.INTERVAL_MILLI, TimeUnit.MILLISECONDS);
-    }
+    heroes.forEach(
+        hero ->
+            executor.scheduleWithFixedDelay(
+                hero, 0, Constants.INTERVAL_MILLI, TimeUnit.MILLISECONDS));
+
+    enemies.forEach(
+        enemy ->
+            executor.scheduleWithFixedDelay(
+                enemy, 0, Constants.INTERVAL_MILLI, TimeUnit.MILLISECONDS));
 
     executor.scheduleWithFixedDelay(
         bulletUpdater, 0, Constants.INTERVAL_MILLI / 40, TimeUnit.MILLISECONDS);
@@ -191,29 +195,21 @@ public class GameScreen implements Screen {
   }
 
   private boolean isEmpty(List<? extends Character> characters) {
-    for (Character character : characters) {
-      if (!character.isDead()) {
-        return false;
-      }
-    }
-    return true;
+    return characters.stream().allMatch(Entity::isDead);
   }
 
   private void drawEntity() {
-    for (Hero hero : heroes) {
-      if (hero == currentHero) {
-        hero.renderBorder(game.batch);
-      }
-      hero.render(game.batch);
-    }
+    heroes.forEach(
+        hero -> {
+          if (hero == currentHero) {
+            hero.renderBorder(game.batch);
+          }
+          hero.render(game.batch);
+        });
 
-    for (Enemy enemy : enemies) {
-      enemy.render(game.batch);
-    }
+    enemies.forEach(enemy -> enemy.render(game.batch));
 
-    for (Bullet bullet : bullets) {
-      bullet.render(game.batch);
-    }
+    bullets.forEach(bullet -> bullet.render(game.batch));
   }
 
   @Override

@@ -39,13 +39,14 @@ public class Bullet extends Entity {
   public void update(List<? extends Character> characters) {
     move(getX() + speedX, getY() + speedY);
 
-    for (Character character : characters) {
-      if (!character.isDead() && character.getBound().overlaps(getBound())) {
-        character.setHp(character.getHp() - getAtk());
-        sound.play();
-        setHp(0);
-      }
-    }
+    characters.stream()
+        .filter(character -> !character.isDead() && character.getBound().overlaps(getBound()))
+        .forEach(
+            character -> {
+              character.setHp(character.getHp() - getAtk());
+              sound.play();
+              setHp(0);
+            });
   }
 
   @Override

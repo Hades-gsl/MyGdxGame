@@ -22,17 +22,17 @@ public class BulletUpdater implements Runnable {
   @Override
   public void run() {
     List<Bullet> dead = new CopyOnWriteArrayList<>();
-    for (Bullet bullet : bullets) {
-      if (bullet.getSprite().getRotation() > 90 || bullet.getSprite().getRotation() < -90) {
-        bullet.update(heroes);
-      } else {
-        bullet.update(enemies);
-      }
-
-      if (bullet.isDead()) {
-        dead.add(bullet);
-      }
-    }
+    bullets.forEach(
+        bullet -> {
+          if (bullet.getSprite().getRotation() > 90 || bullet.getSprite().getRotation() < -90) {
+            bullet.update(heroes);
+          } else {
+            bullet.update(enemies);
+          }
+          if (bullet.isDead()) {
+            dead.add(bullet);
+          }
+        });
     bullets.removeAll(dead);
   }
 }
