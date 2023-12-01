@@ -45,3 +45,10 @@
 # Phase2: 构建
 
 项目基于Gradle进行构建，在项目根目录下执行`./gradlew desktop:dist`即可构建项目，构建结果在`desktop/build/libs`目录下。
+
+
+# phase3: 测试
+
+在项目根目录下执行`./gradlew test`即可运行测试，测试覆盖率报告：
+
+![测试覆盖率报告](./test_coverage.png "测试覆盖率报告")
