@@ -87,4 +87,8 @@ public class Character extends Entity {
       getSprite().setTexture(dieTexture);
     }
   }
+
+  public Texture getDieTexture() {
+    return dieTexture;
+  }
 }
