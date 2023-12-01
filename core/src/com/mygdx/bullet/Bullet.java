@@ -52,7 +52,7 @@ public class Bullet extends Entity {
   @Override
   public boolean isDead() {
     float x = getX() + (float) getSprite().getTexture().getWidth() / 2;
-    float y = getY() + (float) getSprite().getTexture().getWidth() / 2;
+    float y = getY() + (float) getSprite().getTexture().getHeight() / 2;
     return x < 0 || x > Constants.MAP_WIDTH || y < 0 || y > Constants.MAP_HEIGHT || super.isDead();
   }
 }
