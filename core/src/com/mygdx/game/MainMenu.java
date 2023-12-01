@@ -48,7 +48,7 @@ public class MainMenu implements Screen {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
             dispose();
-            game.setScreen(new GameScreen(game));
+            game.setScreen(new GameScreen(game, false));
           }
         });
     table.add(playButton).size(150, 50);

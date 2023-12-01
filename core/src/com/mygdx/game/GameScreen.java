@@ -1,5 +1,7 @@
 package com.mygdx.game;
 
+import static org.mockito.Mockito.mock;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -46,13 +48,17 @@ public class GameScreen implements Screen {
   private BulletUpdater bulletUpdater;
   private long lastTime = TimeUtils.millis();
 
-  public GameScreen(MyGdxGame game) {
+  public GameScreen(MyGdxGame game, boolean isHeadless) {
     this.game = game;
 
     camera = new OrthographicCamera();
     camera.setToOrtho(false, Constants.CAMERA_WIDTH, Constants.CAMERA_HEIGHT);
 
-    shapeRenderer = new ShapeRenderer();
+    if (isHeadless) {
+      shapeRenderer = mock(ShapeRenderer.class);
+    } else {
+      shapeRenderer = new ShapeRenderer();
+    }
 
     initMap();
     initTexture();
