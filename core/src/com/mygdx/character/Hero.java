@@ -30,6 +30,18 @@ public class Hero extends Character implements Runnable {
     this.enemies = enemies;
   }
 
+  public Map getMap() {
+    return map;
+  }
+
+  public List<Bullet> getBullets() {
+    return bullets;
+  }
+
+  public List<Enemy> getEnemies() {
+    return enemies;
+  }
+
   // attack by click
   public void update(float x, float y) {
     attack(x, y, bullets);
@@ -55,8 +67,12 @@ public class Hero extends Character implements Runnable {
     }
   }
 
-  public void setAI(boolean isAI){
+  public void setAI(boolean isAI) {
     this.isAI = isAI;
+  }
+
+  public boolean isAI() {
+    return isAI;
   }
 
   public void renderBorder(SpriteBatch batch) {
@@ -73,12 +89,12 @@ public class Hero extends Character implements Runnable {
   @Override
   public void run() {
     if (!isAI) {
-        return;
+      return;
     }
 
     if (!isDead()) {
       update();
-    }else{
+    } else {
       changeDieTexture();
     }
   }

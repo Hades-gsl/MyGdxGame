@@ -27,6 +27,18 @@ public class Enemy extends Character implements Runnable {
     this.heroes = heroes;
   }
 
+  public Map getMap() {
+    return map;
+  }
+
+  public List<Bullet> getBullets() {
+    return bullets;
+  }
+
+  public List<Hero> getHeroes() {
+    return heroes;
+  }
+
   // AI
   public void update() {
     attackMinHp(bullets, heroes);
@@ -39,7 +51,7 @@ public class Enemy extends Character implements Runnable {
   public void run() {
     if (!isDead()) {
       update();
-    }else{
+    } else {
       changeDieTexture();
     }
   }
