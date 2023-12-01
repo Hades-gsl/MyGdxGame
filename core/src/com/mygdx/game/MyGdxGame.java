@@ -3,6 +3,9 @@ package com.mygdx.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+/**
+ * @author Hades
+ */
 public class MyGdxGame extends Game {
   SpriteBatch batch;
 
