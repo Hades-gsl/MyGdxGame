@@ -31,12 +31,15 @@ public class Map {
     return matrix[(int) (x / Constants.CELL_SIZE)][(int) (y / Constants.CELL_SIZE)];
   }
 
-
   public void set(int x, int y, int value) {
+    if (x < 0 || x >= Constants.MAP_WIDTH || y < 0 || y >= Constants.MAP_HEIGHT) {
+      return;
+    }
+
     matrix[(int) (x / Constants.CELL_SIZE)][(int) (y / Constants.CELL_SIZE)] = value;
   }
 
-  public void render(ShapeRenderer shapeRenderer){
+  public void render(ShapeRenderer shapeRenderer) {
     shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
     for (int i = 0; i < Constants.ROWS; i++) {
       for (int j = 0; j < Constants.COLS; j++) {
@@ -55,10 +58,10 @@ public class Map {
 
     shapeRenderer.setColor(Color.SLATE);
     shapeRenderer.rectLine(
-            Constants.ROWS / 2 * Constants.CELL_SIZE,
-            0,
-            Constants.ROWS / 2 * Constants.CELL_SIZE,
-            Constants.MAP_HEIGHT,
-            Constants.BORDER_WIDTH);
+        Constants.ROWS / 2 * Constants.CELL_SIZE,
+        0,
+        Constants.ROWS / 2 * Constants.CELL_SIZE,
+        Constants.MAP_HEIGHT,
+        Constants.BORDER_WIDTH);
   }
 }
