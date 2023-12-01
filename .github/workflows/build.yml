@@ -1,28 +1,31 @@
-  name: Build
-  on:
-    push:
-      branches:
-        - phase2
+name: Build and test
+on:
+  push:
+    branches:
+      - phase3
 
-  jobs:
-    build:
-      runs-on: ubuntu-latest
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-      steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-        - name: Set up JDK 17
-          uses: actions/setup-java@v3
-          with:
-            distribution: 'zulu'
-            java-version: '17'
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
 
-        - name: Setup Gradle
-          uses: gradle/gradle-build-action@v2
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
 
-        - name: Make gradlew executable
-          run: chmod +x ./gradlew
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
 
-        - name: Build with Gradle
-          run: ./gradlew desktop:dist
+      - name: Build with Gradle
+        run: ./gradlew desktop:dist
+
+      - name: Test with Gradle
+        run: ./gradlew test
