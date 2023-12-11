@@ -87,7 +87,6 @@ public class GameScreen extends BaseScreen {
           public void changed(ChangeEvent event, Actor actor) {
             stop();
             saveGame();
-            //            start();
           }
         });
 
@@ -179,7 +178,6 @@ public class GameScreen extends BaseScreen {
     bulletUpdater = new BulletUpdater(bullets, heroes, enemies);
   }
 
-  // start thread
   private void start() {
     executor =
         new ScheduledThreadPoolExecutor(Config.INIT_ENEMY_COUNT + Config.INIT_HERO_COUNT + 1);
@@ -217,8 +215,17 @@ public class GameScreen extends BaseScreen {
   }
 
   private void saveGame() {
+    TextButton okButton = new TextButton("OK", skin);
+    okButton.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            start();
+          }
+        });
+
     try {
-      String filename = UUID.randomUUID() + ".ser";
+      String filename = Config.RECORD_PATH + UUID.randomUUID() + ".ser";
       FileOutputStream fileOut = new FileOutputStream(filename);
       ObjectOutputStream out = new ObjectOutputStream(fileOut);
       out.writeObject(heroes);
@@ -228,7 +235,7 @@ public class GameScreen extends BaseScreen {
       fileOut.close();
       new Dialog("Success", skin)
           .text("Game saved successfully to file: " + filename)
-          .button("OK")
+          .button(okButton)
           .show(stage);
     } catch (IOException i) {
       new Dialog("Error", skin)

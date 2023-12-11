@@ -38,6 +38,16 @@ public class MainMenu extends BaseScreen {
           }
         });
 
+    TextButton loadButton = new TextButton("Load", skin);
+    loadButton.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            dispose();
+            game.setScreen(new ReadRecordScreen(game));
+          }
+        });
+
     TextButton exitButton = new TextButton("Exit", skin);
     exitButton.addListener(
         new ChangeListener() {
@@ -51,6 +61,8 @@ public class MainMenu extends BaseScreen {
     table.add(playButton).size(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT).pad(Config.BUTTON_PAD);
     table.row();
     table.add(settingButton).size(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT).pad(Config.BUTTON_PAD);
+    table.row();
+    table.add(loadButton).size(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT).pad(Config.BUTTON_PAD);
     table.row();
     table.add(exitButton).size(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT).pad(Config.BUTTON_PAD);
   }
