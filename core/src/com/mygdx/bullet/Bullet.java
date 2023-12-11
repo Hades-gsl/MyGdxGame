@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.mygdx.character.Character;
-import com.mygdx.constants.Constants;
+import com.mygdx.config.config;
 import com.mygdx.entity.Entity;
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class Bullet extends Entity {
     this.speedY = speedY;
     getSprite().setRotation(rotation);
 
-    sound = Gdx.audio.newSound(Gdx.files.internal(Constants.SHOOT_PATH));
+    sound = Gdx.audio.newSound(Gdx.files.internal(config.SHOOT_PATH));
 
     Gdx.app.log("Bullet", "x: " + x + ", y: " + y + ", rotation: " + rotation);
   }
@@ -53,6 +53,6 @@ public class Bullet extends Entity {
   public boolean isDead() {
     float x = getX() + (float) getSprite().getTexture().getWidth() / 2;
     float y = getY() + (float) getSprite().getTexture().getHeight() / 2;
-    return x < 0 || x > Constants.MAP_WIDTH || y < 0 || y > Constants.MAP_HEIGHT || super.isDead();
+    return x < 0 || x > config.MAP_WIDTH || y < 0 || y > config.MAP_HEIGHT || super.isDead();
   }
 }

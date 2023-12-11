@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.mygdx.character.Hero;
-import com.mygdx.constants.Constants;
+import com.mygdx.config.config;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.testRunner.TestRunner;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class BulletTest {
   public static void setUpAll() {
     testRunner = new TestRunner(new MyGdxGame());
 
-    texture = new Texture(Gdx.files.internal(Constants.BULLET_PATH));
+    texture = new Texture(Gdx.files.internal(config.BULLET_PATH));
 
     heroList = new ArrayList<>();
     heroList.add(new Hero(0, 0, 1, 1, texture, texture));
@@ -69,8 +69,8 @@ public class BulletTest {
       return Stream.of(
           Arguments.of(-32f, 1f),
           Arguments.of(1f, -32f),
-          Arguments.of(1f, Constants.MAP_HEIGHT),
-          Arguments.of(Constants.MAP_WIDTH, 1f));
+          Arguments.of(1f, config.MAP_HEIGHT),
+          Arguments.of(config.MAP_WIDTH, 1f));
     }
   }
 }

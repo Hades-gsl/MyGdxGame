@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.mygdx.bullet.Bullet;
-import com.mygdx.constants.Constants;
+import com.mygdx.config.config;
 import com.mygdx.entity.Entity;
 import com.mygdx.matrix.Map;
 
@@ -24,21 +24,21 @@ public class Character extends Entity {
 
     this.charaterTexture = charactorTexture;
     this.bulletTexture = bulletTexture;
-    this.dieTexture = new Texture(Gdx.files.internal(Constants.DIE_PATH));
+    this.dieTexture = new Texture(Gdx.files.internal(config.DIE_PATH));
   }
 
   public void attack(Character enemy, List<Bullet> bullets) {
-    attack(enemy.getX() + Constants.CELL_SIZE / 2, enemy.getY() + Constants.CELL_SIZE / 2, bullets);
+    attack(enemy.getX() + config.CELL_SIZE / 2, enemy.getY() + config.CELL_SIZE / 2, bullets);
   }
 
   public void attack(float x, float y, List<Bullet> bullets) {
     float rotation = MathUtils.atan2(y - getY(), x - getX()) * MathUtils.radiansToDegrees;
-    float speedX = MathUtils.cosDeg(rotation) * Constants.BULLET_SPEED;
-    float speedY = MathUtils.sinDeg(rotation) * Constants.BULLET_SPEED;
+    float speedX = MathUtils.cosDeg(rotation) * config.BULLET_SPEED;
+    float speedY = MathUtils.sinDeg(rotation) * config.BULLET_SPEED;
     bullets.add(
         new Bullet(
-            getX() + Constants.CELL_SIZE / 2,
-            getY() + Constants.CELL_SIZE / 2,
+            getX() + config.CELL_SIZE / 2,
+            getY() + config.CELL_SIZE / 2,
             getAtk(),
             speedX,
             speedY,
@@ -65,20 +65,20 @@ public class Character extends Entity {
 
     boolean condition =
         isGreaterHalf
-            ? getX() / Constants.CELL_SIZE + dirs[dir] >= Constants.ROWS / 2
-            : getX() / Constants.CELL_SIZE + dirs[dir] < Constants.ROWS / 2;
+            ? getX() / config.CELL_SIZE + dirs[dir] >= config.ROWS / 2
+            : getX() / config.CELL_SIZE + dirs[dir] < config.ROWS / 2;
 
     if (map.get(
-                (int) (getX() + dirs[dir] * Constants.CELL_SIZE),
-                (int) (getY() + dirs[dir + 1] * Constants.CELL_SIZE))
+                (int) (getX() + dirs[dir] * config.CELL_SIZE),
+                (int) (getY() + dirs[dir + 1] * config.CELL_SIZE))
             == 0
         && condition) {
       map.set((int) getX(), (int) getY(), 0);
       map.set(
-          (int) (getX() + dirs[dir] * Constants.CELL_SIZE),
-          (int) (getY() + dirs[dir + 1] * Constants.CELL_SIZE),
+          (int) (getX() + dirs[dir] * config.CELL_SIZE),
+          (int) (getY() + dirs[dir + 1] * config.CELL_SIZE),
           1);
-      move(getX() + dirs[dir] * Constants.CELL_SIZE, getY() + dirs[dir + 1] * Constants.CELL_SIZE);
+      move(getX() + dirs[dir] * config.CELL_SIZE, getY() + dirs[dir + 1] * config.CELL_SIZE);
     }
   }
 

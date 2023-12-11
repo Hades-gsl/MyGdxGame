@@ -2,7 +2,7 @@ package com.mygdx.character;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.mygdx.bullet.Bullet;
-import com.mygdx.constants.Constants;
+import com.mygdx.config.config;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.matrix.Map;
 import com.mygdx.testRunner.TestRunner;
@@ -38,8 +38,8 @@ class EnemyTest {
             0,
             100,
             10,
-            new Texture(Constants.ENEMY_PATH + " (1).png"),
-            new Texture(Constants.BULLET_PATH));
+            new Texture(config.ENEMY_PATH + " (1).png"),
+            new Texture(config.BULLET_PATH));
   }
 
   @Test

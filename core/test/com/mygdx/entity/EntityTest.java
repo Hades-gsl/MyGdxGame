@@ -3,7 +3,7 @@ package com.mygdx.entity;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.mygdx.constants.Constants;
+import com.mygdx.config.config;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.testRunner.TestRunner;
 import org.junit.jupiter.api.*;
@@ -25,7 +25,7 @@ class EntityTest {
 
   @BeforeEach
   void setUp() {
-    entity = new EntityClass(0, 0, 100, 10, new Texture(Constants.HERO_PATH + " (1).png"));
+    entity = new EntityClass(0, 0, 100, 10, new Texture(config.HERO_PATH + " (1).png"));
   }
 
   @AfterAll

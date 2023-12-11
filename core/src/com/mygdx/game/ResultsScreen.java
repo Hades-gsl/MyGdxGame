@@ -14,8 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.mygdx.constants.Constants;
-import javax.swing.*;
+import com.mygdx.config.config;
 
 /**
  * @author Hades
@@ -32,7 +31,7 @@ public class ResultsScreen implements Screen {
     this.winner = winner;
 
     camera = new OrthographicCamera();
-    camera.setToOrtho(false, Constants.CAMERA_WIDTH, Constants.CAMERA_HEIGHT);
+    camera.setToOrtho(false, config.CAMERA_WIDTH, config.CAMERA_HEIGHT);
 
     table = new Table();
     table.setFillParent(true);
@@ -43,7 +42,7 @@ public class ResultsScreen implements Screen {
 
     draw();
 
-    Music music = Gdx.audio.newMusic(Gdx.files.internal(Constants.WIN_PATH));
+    Music music = Gdx.audio.newMusic(Gdx.files.internal(config.WIN_PATH));
     music.play();
   }
 
@@ -77,7 +76,7 @@ public class ResultsScreen implements Screen {
 
   @Override
   public void render(float delta) {
-    ScreenUtils.clear(Constants.BACKGROUND_COLOR);
+    ScreenUtils.clear(config.BACKGROUND_COLOR);
 
     camera.update();
     game.batch.setProjectionMatrix(camera.combined);
