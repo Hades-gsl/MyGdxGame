@@ -4,6 +4,7 @@
 *.war
 *.ear
 hs_err_pid*
+*.ser
 
 ## Robovm
 /ios/robovm-build/
