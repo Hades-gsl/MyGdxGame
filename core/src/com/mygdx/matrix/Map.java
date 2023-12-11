@@ -5,10 +5,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.config.Config;
 
+import java.io.Serializable;
+
 /**
  * @author Hades
  */
-public class Map {
+public class Map implements Serializable {
   private final int[][] matrix;
 
   public Map(int rows, int cols) {
