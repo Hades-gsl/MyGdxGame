@@ -6,17 +6,17 @@ import com.badlogic.gdx.graphics.Color;
  * @author Hades
  */
 public class Config {
-  public static final float CAMERA_WIDTH = 32 * 10 + 100;
-  public static final float CAMERA_HEIGHT = 32 * 10;
-  public static final float ROWS = 10;
-  public static final float COLS = 10;
-  public static final float CELL_SIZE = 32;
+  public static float ROWS = 10;
+  public static float COLS = 10;
+  public static float CELL_SIZE = 32;
+  public static float CAMERA_WIDTH = ROWS * CELL_SIZE + 100;
+  public static float CAMERA_HEIGHT = COLS * CELL_SIZE;
   public static final int CHARACTER_COUNT = 6;
-  public static final int INIT_HERO_COUNT = 5;
-  public static final int INIT_ENEMY_COUNT = 5;
+  public static int INIT_HERO_COUNT = (int) ((ROWS + COLS) / 4);
+  public static int INIT_ENEMY_COUNT = (int) ((ROWS + COLS) / 4);
   public static final float BULLET_SPEED = 2;
-  public static final float MAP_WIDTH = 32 * 10;
-  public static final float MAP_HEIGHT = 32 * 10;
+  public static float MAP_WIDTH = ROWS * CELL_SIZE;
+  public static float MAP_HEIGHT = COLS * CELL_SIZE;
   public static final int HERO_HP = 100;
   public static final int HERO_ATK = 10;
   public static final int ENEMY_HP = 100;
@@ -31,6 +31,18 @@ public class Config {
   public static final String WIN_PATH = "sound/win.mp3";
   public static final String BGM_PATH = "sound/bgm.mp3";
   public static final String SHOOT_PATH = "sound/bullet.mp3";
+  public static final float BUTTON_WIDTH = 150;
+  public static final float BUTTON_HEIGHT = 50;
+  public static final float BUTTON_PAD = 10;
 
-  private
+  public static void changeConfig(float rows, float cols) {
+    ROWS = rows;
+    COLS = cols;
+    CAMERA_WIDTH = ROWS * CELL_SIZE + 100;
+    CAMERA_HEIGHT = COLS * CELL_SIZE;
+    INIT_HERO_COUNT = (int) ((ROWS + COLS) / 4);
+    INIT_ENEMY_COUNT = (int) ((ROWS + COLS) / 4);
+    MAP_WIDTH = ROWS * CELL_SIZE;
+    MAP_HEIGHT = COLS * CELL_SIZE;
+  }
 }
