@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 /**
  * @author Hades
  */
-public class config {
+public class Config {
   public static final float CAMERA_WIDTH = 32 * 10 + 100;
   public static final float CAMERA_HEIGHT = 32 * 10;
   public static final float ROWS = 10;
@@ -31,4 +31,6 @@ public class config {
   public static final String WIN_PATH = "sound/win.mp3";
   public static final String BGM_PATH = "sound/bgm.mp3";
   public static final String SHOOT_PATH = "sound/bullet.mp3";
+
+  private
 }

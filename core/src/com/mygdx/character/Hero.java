@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.bullet.Bullet;
-import com.mygdx.config.config;
+import com.mygdx.config.Config;
 import com.mygdx.matrix.Map;
 import java.util.List;
 
@@ -51,7 +51,7 @@ public class Hero extends Character implements Runnable {
   public void update(int dx, int dy) {
     synchronized (map) {
       if (map.get((int) (getX() + dx), (int) (getY() + dy)) == 0
-          && (getX() + dx) / config.CELL_SIZE < config.ROWS / 2) {
+          && (getX() + dx) / Config.CELL_SIZE < Config.ROWS / 2) {
         map.set((int) getX(), (int) getY(), 0);
         map.set((int) (getX() + dx), (int) (getY() + dy), 1);
         move(getX() + dx, getY() + dy);
@@ -76,13 +76,13 @@ public class Hero extends Character implements Runnable {
   }
 
   public void renderBorder(SpriteBatch batch) {
-    batch.setColor(config.BACKGROUND_COLOR);
+    batch.setColor(Config.BACKGROUND_COLOR);
     batch.draw(
         getSprite().getTexture(),
-        getSprite().getX() - config.BORDER_WIDTH,
-        getSprite().getY() - config.BORDER_WIDTH,
-        getSprite().getWidth() + 2 * config.BORDER_WIDTH,
-        getSprite().getHeight() + 2 * config.BORDER_WIDTH);
+        getSprite().getX() - Config.BORDER_WIDTH,
+        getSprite().getY() - Config.BORDER_WIDTH,
+        getSprite().getWidth() + 2 * Config.BORDER_WIDTH,
+        getSprite().getHeight() + 2 * Config.BORDER_WIDTH);
     batch.setColor(Color.WHITE);
   }
 

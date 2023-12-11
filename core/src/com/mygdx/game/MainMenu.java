@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.mygdx.config.config;
+import com.mygdx.config.Config;
 
 /**
  * @author Hades
@@ -27,7 +27,7 @@ public class MainMenu implements Screen {
     this.game = game;
 
     camera = new OrthographicCamera();
-    camera.setToOrtho(false, config.CAMERA_WIDTH, config.CAMERA_HEIGHT);
+    camera.setToOrtho(false, Config.CAMERA_WIDTH, Config.CAMERA_HEIGHT);
 
     table = new Table();
     table.setFillParent(true);
@@ -74,7 +74,7 @@ public class MainMenu implements Screen {
 
   @Override
   public void render(float delta) {
-    ScreenUtils.clear(config.BACKGROUND_COLOR);
+    ScreenUtils.clear(Config.BACKGROUND_COLOR);
 
     camera.update();
     game.batch.setProjectionMatrix(camera.combined);

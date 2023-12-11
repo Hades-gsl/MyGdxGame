@@ -2,7 +2,7 @@ package com.mygdx.matrix;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.mygdx.config.config;
+import com.mygdx.config.Config;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.testRunner.TestRunner;
 import java.util.stream.Stream;
@@ -39,7 +39,7 @@ class MapTest {
   @ArgumentsSource(MapTestProvider.class)
   void get(int x, int y, int expected) {
     assertEquals(
-        expected, map.get((int) (x * config.CELL_SIZE), (int) (y * config.CELL_SIZE)));
+        expected, map.get((int) (x * Config.CELL_SIZE), (int) (y * Config.CELL_SIZE)));
   }
 
   static class MapTestProvider implements ArgumentsProvider {

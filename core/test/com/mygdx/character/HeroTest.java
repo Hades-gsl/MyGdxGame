@@ -2,7 +2,7 @@ package com.mygdx.character;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.mygdx.bullet.Bullet;
-import com.mygdx.config.config;
+import com.mygdx.config.Config;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.matrix.Map;
 import com.mygdx.testRunner.TestRunner;
@@ -41,8 +41,8 @@ class HeroTest {
             0,
             100,
             10,
-            new Texture(config.HERO_PATH + " (1).png"),
-            new Texture(config.BULLET_PATH));
+            new Texture(Config.HERO_PATH + " (1).png"),
+            new Texture(Config.BULLET_PATH));
     map = new Map(10, 10);
     bullets = new ArrayList<>();
     enemies = new ArrayList<>();
@@ -65,8 +65,8 @@ class HeroTest {
 
   @Test
   void testUpdate() {
-    hero.update((int) config.CELL_SIZE, (int) config.CELL_SIZE);
-    assertEquals(1, map.get((int) config.CELL_SIZE, (int) config.CELL_SIZE));
+    hero.update((int) Config.CELL_SIZE, (int) Config.CELL_SIZE);
+    assertEquals(1, map.get((int) Config.CELL_SIZE, (int) Config.CELL_SIZE));
     assertEquals(0, map.get(0, 0));
   }
 

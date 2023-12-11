@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.mygdx.bullet.Bullet;
-import com.mygdx.config.config;
+import com.mygdx.config.Config;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.matrix.Map;
 import com.mygdx.testRunner.TestRunner;
@@ -35,16 +35,16 @@ class CharacterTest {
             0,
             100,
             10,
-            new Texture(config.HERO_PATH + " (1).png"),
-            new Texture(config.BULLET_PATH));
+            new Texture(Config.HERO_PATH + " (1).png"),
+            new Texture(Config.BULLET_PATH));
     enemy =
         new Character(
             0,
             0,
             100,
             10,
-            new Texture(config.HERO_PATH + " (1).png"),
-            new Texture(config.BULLET_PATH));
+            new Texture(Config.HERO_PATH + " (1).png"),
+            new Texture(Config.BULLET_PATH));
   }
 
   @Test
@@ -69,16 +69,16 @@ class CharacterTest {
             0,
             50,
             10,
-            new Texture(config.HERO_PATH + " (1).png"),
-            new Texture(config.BULLET_PATH));
+            new Texture(Config.HERO_PATH + " (1).png"),
+            new Texture(Config.BULLET_PATH));
     Character enemy3 =
         new Character(
             0,
             0,
             75,
             10,
-            new Texture(config.HERO_PATH + " (1).png"),
-            new Texture(config.BULLET_PATH));
+            new Texture(Config.HERO_PATH + " (1).png"),
+            new Texture(Config.BULLET_PATH));
     assertEquals(100, enemy.getHp());
     assertEquals(50, enemy2.getHp());
     assertEquals(75, enemy3.getHp());
@@ -93,7 +93,7 @@ class CharacterTest {
 
   @Test
   void randomMove() {
-    Map map = new Map((int) config.ROWS, (int) config.COLS);
+    Map map = new Map((int) Config.ROWS, (int) Config.COLS);
     map.set((int) character.getX(), (int) character.getY(), 1);
     character.randomMove(map, true);
     assertEquals(1, map.get((int) character.getX(), (int) character.getY()));
@@ -101,12 +101,12 @@ class CharacterTest {
 
   @Test
   void getDieTexture() {
-    assertEquals(new Texture(config.DIE_PATH).toString(), character.getDieTexture().toString());
+    assertEquals(new Texture(Config.DIE_PATH).toString(), character.getDieTexture().toString());
   }
 
   @Test
   void changeDieTexture() {
     character.changeDieTexture();
-    assertEquals(new Texture(config.DIE_PATH).toString(), character.getDieTexture().toString());
+    assertEquals(new Texture(Config.DIE_PATH).toString(), character.getDieTexture().toString());
   }
 }

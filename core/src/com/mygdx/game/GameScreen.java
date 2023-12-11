@@ -19,7 +19,7 @@ import com.mygdx.bullet.BulletUpdater;
 import com.mygdx.character.Character;
 import com.mygdx.character.Enemy;
 import com.mygdx.character.Hero;
-import com.mygdx.config.config;
+import com.mygdx.config.Config;
 import com.mygdx.entity.Entity;
 import com.mygdx.matrix.Map;
 import java.util.List;
@@ -52,7 +52,7 @@ public class GameScreen implements Screen {
     this.game = game;
 
     camera = new OrthographicCamera();
-    camera.setToOrtho(false, config.CAMERA_WIDTH, config.CAMERA_HEIGHT);
+    camera.setToOrtho(false, Config.CAMERA_WIDTH, Config.CAMERA_HEIGHT);
 
     if (isHeadless) {
       shapeRenderer = mock(ShapeRenderer.class);
@@ -73,7 +73,7 @@ public class GameScreen implements Screen {
     currentHero.setAI(false);
     Gdx.input.setInputProcessor(new InputHandler());
 
-    bgm = Gdx.audio.newMusic(Gdx.files.internal(config.BGM_PATH));
+    bgm = Gdx.audio.newMusic(Gdx.files.internal(Config.BGM_PATH));
     bgm.setLooping(true);
     bgm.play();
 
@@ -84,35 +84,35 @@ public class GameScreen implements Screen {
     heroTextures = new CopyOnWriteArrayList<>();
     enemyTextures = new CopyOnWriteArrayList<>();
 
-    for (int i = 1; i <= config.CHARACTER_COUNT; i++) {
-      heroTextures.add(new Texture(Gdx.files.internal(config.HERO_PATH + " (" + i + ").png")));
-      enemyTextures.add(new Texture(Gdx.files.internal(config.ENEMY_PATH + " (" + i + ").png")));
+    for (int i = 1; i <= Config.CHARACTER_COUNT; i++) {
+      heroTextures.add(new Texture(Gdx.files.internal(Config.HERO_PATH + " (" + i + ").png")));
+      enemyTextures.add(new Texture(Gdx.files.internal(Config.ENEMY_PATH + " (" + i + ").png")));
     }
 
-    bulletTexture = new Texture(Gdx.files.internal(config.BULLET_PATH));
+    bulletTexture = new Texture(Gdx.files.internal(Config.BULLET_PATH));
   }
 
   private void initMap() {
-    map = new Map((int) config.ROWS, (int) config.COLS);
+    map = new Map((int) Config.ROWS, (int) Config.COLS);
   }
 
   private void initHero() {
-    for (int i = 0; i < config.INIT_HERO_COUNT; i++) {
-      int x = (int) (MathUtils.random(config.ROWS / 2));
-      int y = (int) (MathUtils.random(config.COLS));
+    for (int i = 0; i < Config.INIT_HERO_COUNT; i++) {
+      int x = (int) (MathUtils.random(Config.ROWS / 2));
+      int y = (int) (MathUtils.random(Config.COLS));
 
-      while (map.get((int) (x * config.CELL_SIZE), (int) (y * config.CELL_SIZE)) != 0) {
-        x = (int) (MathUtils.random(config.ROWS / 2));
-        y = (int) (MathUtils.random(config.COLS));
+      while (map.get((int) (x * Config.CELL_SIZE), (int) (y * Config.CELL_SIZE)) != 0) {
+        x = (int) (MathUtils.random(Config.ROWS / 2));
+        y = (int) (MathUtils.random(Config.COLS));
       }
 
-      map.set((int) (x * config.CELL_SIZE), (int) (y * config.CELL_SIZE), 1);
+      map.set((int) (x * Config.CELL_SIZE), (int) (y * Config.CELL_SIZE), 1);
       Hero hero =
           new Hero(
-              (int) (x * config.CELL_SIZE),
-              (int) (y * config.CELL_SIZE),
-              config.HERO_HP,
-              config.HERO_ATK,
+              (int) (x * Config.CELL_SIZE),
+              (int) (y * Config.CELL_SIZE),
+              Config.HERO_HP,
+              Config.HERO_ATK,
               heroTextures.get(i),
               bulletTexture);
       hero.set(map, bullets, enemies);
@@ -121,22 +121,22 @@ public class GameScreen implements Screen {
   }
 
   private void initEnemy() {
-    for (int i = 0; i < config.INIT_ENEMY_COUNT; i++) {
-      int x = (int) (MathUtils.random(config.ROWS / 2, config.ROWS));
-      int y = (int) (MathUtils.random(config.COLS));
+    for (int i = 0; i < Config.INIT_ENEMY_COUNT; i++) {
+      int x = (int) (MathUtils.random(Config.ROWS / 2, Config.ROWS));
+      int y = (int) (MathUtils.random(Config.COLS));
 
-      while (map.get((int) (x * config.CELL_SIZE), (int) (y * config.CELL_SIZE)) != 0) {
-        x = (int) (MathUtils.random(config.ROWS / 2, config.ROWS));
-        y = (int) (MathUtils.random(config.COLS));
+      while (map.get((int) (x * Config.CELL_SIZE), (int) (y * Config.CELL_SIZE)) != 0) {
+        x = (int) (MathUtils.random(Config.ROWS / 2, Config.ROWS));
+        y = (int) (MathUtils.random(Config.COLS));
       }
 
-      map.set((int) (x * config.CELL_SIZE), (int) (y * config.CELL_SIZE), 1);
+      map.set((int) (x * Config.CELL_SIZE), (int) (y * Config.CELL_SIZE), 1);
       Enemy enemy =
           new Enemy(
-              (int) (x * config.CELL_SIZE),
-              (int) (y * config.CELL_SIZE),
-              config.ENEMY_HP,
-              config.ENEMY_ATK,
+              (int) (x * Config.CELL_SIZE),
+              (int) (y * Config.CELL_SIZE),
+              Config.ENEMY_HP,
+              Config.ENEMY_ATK,
               enemyTextures.get(i),
               bulletTexture);
       enemy.set(map, bullets, heroes);
@@ -151,20 +151,20 @@ public class GameScreen implements Screen {
   // start thread
   private void start() {
     executor =
-        new ScheduledThreadPoolExecutor(config.INIT_ENEMY_COUNT + config.INIT_HERO_COUNT + 1);
+        new ScheduledThreadPoolExecutor(Config.INIT_ENEMY_COUNT + Config.INIT_HERO_COUNT + 1);
 
     heroes.forEach(
         hero ->
             executor.scheduleWithFixedDelay(
-                hero, 0, config.INTERVAL_MILLI, TimeUnit.MILLISECONDS));
+                hero, 0, Config.INTERVAL_MILLI, TimeUnit.MILLISECONDS));
 
     enemies.forEach(
         enemy ->
             executor.scheduleWithFixedDelay(
-                enemy, 0, config.INTERVAL_MILLI, TimeUnit.MILLISECONDS));
+                enemy, 0, Config.INTERVAL_MILLI, TimeUnit.MILLISECONDS));
 
     executor.scheduleWithFixedDelay(
-        bulletUpdater, 0, config.INTERVAL_MILLI / 40, TimeUnit.MILLISECONDS);
+        bulletUpdater, 0, Config.INTERVAL_MILLI / 40, TimeUnit.MILLISECONDS);
   }
 
   @Override
@@ -174,7 +174,7 @@ public class GameScreen implements Screen {
 
   @Override
   public void render(float delta) {
-    ScreenUtils.clear(config.BACKGROUND_COLOR);
+    ScreenUtils.clear(Config.BACKGROUND_COLOR);
 
     camera.update();
 
@@ -233,7 +233,7 @@ public class GameScreen implements Screen {
   @Override
   public void dispose() {
     try {
-      if (executor.awaitTermination(config.INTERVAL_MILLI / 10, TimeUnit.MILLISECONDS)) {
+      if (executor.awaitTermination(Config.INTERVAL_MILLI / 10, TimeUnit.MILLISECONDS)) {
         shapeRenderer.dispose();
       }
     } catch (InterruptedException e) {
@@ -279,7 +279,7 @@ public class GameScreen implements Screen {
           break;
       }
 
-      currentHero.update((int) (dx * config.CELL_SIZE), (int) (dy * config.CELL_SIZE));
+      currentHero.update((int) (dx * Config.CELL_SIZE), (int) (dy * Config.CELL_SIZE));
 
       return false;
     }
@@ -296,7 +296,7 @@ public class GameScreen implements Screen {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-      if (currentHero == null || TimeUtils.millis() - lastTime < config.INTERVAL_MILLI) {
+      if (currentHero == null || TimeUtils.millis() - lastTime < Config.INTERVAL_MILLI) {
         return false;
       }
 
