@@ -14,7 +14,7 @@ import java.util.List;
 public class Bullet extends Entity {
   private final float speedX;
   private final float speedY;
-  private final Sound sound;
+  private final transient Sound sound;
 
   public Bullet(
       float x,

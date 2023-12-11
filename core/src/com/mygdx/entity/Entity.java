@@ -5,15 +5,17 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 
+import java.io.Serializable;
+
 /**
  * @author Hades
  */
-public abstract class Entity {
+public abstract class Entity implements Serializable {
   private float x;
   private float y;
   private int hp;
   private int atk;
-  private final Sprite sprite;
+  private final transient Sprite sprite;
 
   public Entity(float x, float y, int hp, int atk, Texture texture) {
     this.x = x;

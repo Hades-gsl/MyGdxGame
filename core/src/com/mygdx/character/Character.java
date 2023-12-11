@@ -14,10 +14,10 @@ import java.util.List;
  * @author Hades
  */
 public class Character extends Entity {
-  private final Texture bulletTexture;
+  private final transient Texture bulletTexture;
   private final int[] dirs = {0, 0, 1, 0, -1, 0};
-  private final Texture charaterTexture;
-  private final Texture dieTexture;
+  private final transient Texture charaterTexture;
+  private final transient Texture dieTexture;
 
   public Character(int x, int y, int hp, int atk, Texture charactorTexture, Texture bulletTexture) {
     super(x, y, hp, atk, charactorTexture);
