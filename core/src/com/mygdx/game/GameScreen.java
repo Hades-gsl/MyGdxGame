@@ -5,13 +5,16 @@ import static org.mockito.Mockito.mock;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.bullet.Bullet;
@@ -22,7 +25,11 @@ import com.mygdx.character.Hero;
 import com.mygdx.config.Config;
 import com.mygdx.entity.Entity;
 import com.mygdx.matrix.Map;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -30,29 +37,24 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Hades
  */
-public class GameScreen implements Screen {
+public class GameScreen extends BaseScreen {
 
-  final MyGdxGame game;
-  private final OrthographicCamera camera;
   private final ShapeRenderer shapeRenderer;
+  private List<Enemy> enemies;
+  private List<Hero> heroes;
+  private List<Bullet> bullets;
   private List<Texture> heroTextures;
   private List<Texture> enemyTextures;
-  private final List<Enemy> enemies;
-  private final List<Hero> heroes;
-  private final List<Bullet> bullets;
   private Texture bulletTexture;
   private Map map;
   private final Hero currentHero;
-  private final Music bgm;
+  private Music bgm;
   private ScheduledThreadPoolExecutor executor;
   private BulletUpdater bulletUpdater;
   private long lastTime = TimeUtils.millis();
 
   public GameScreen(MyGdxGame game, boolean isHeadless) {
-    this.game = game;
-
-    camera = new OrthographicCamera();
-    camera.setToOrtho(false, Config.CAMERA_WIDTH, Config.CAMERA_HEIGHT);
+    super(game);
 
     if (isHeadless) {
       shapeRenderer = mock(ShapeRenderer.class);
@@ -60,6 +62,39 @@ public class GameScreen implements Screen {
       shapeRenderer = new ShapeRenderer();
     }
 
+    initButton();
+
+    initGame();
+
+    currentHero = heroes.get(0);
+    currentHero.setAI(false);
+    multiplexer.addProcessor(new InputHandler());
+
+    start();
+  }
+
+  private void initButton() {
+    TextButton saveButton = new TextButton("Save Progress", skin);
+
+    Vector3 position = new Vector3(Config.MAP_WIDTH, Config.MAP_HEIGHT, 0);
+    camera.project(position);
+    saveButton.setSize(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT);
+    saveButton.setPosition(position.x, position.y, Align.topLeft);
+
+    saveButton.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            stop();
+            saveGame();
+            //            start();
+          }
+        });
+
+    stage.addActor(saveButton);
+  }
+
+  private void initGame() {
     initMap();
     initTexture();
     heroes = new CopyOnWriteArrayList<>();
@@ -69,27 +104,23 @@ public class GameScreen implements Screen {
     initEnemy();
     initBullet();
 
-    currentHero = heroes.get(0);
-    currentHero.setAI(false);
-    Gdx.input.setInputProcessor(new InputHandler());
-
     bgm = Gdx.audio.newMusic(Gdx.files.internal(Config.BGM_PATH));
     bgm.setLooping(true);
     bgm.play();
-
-    start();
   }
 
   private void initTexture() {
     heroTextures = new CopyOnWriteArrayList<>();
     enemyTextures = new CopyOnWriteArrayList<>();
-
-    for (int i = 1; i <= Config.CHARACTER_COUNT; i++) {
-      heroTextures.add(new Texture(Gdx.files.internal(Config.HERO_PATH + " (" + i + ").png")));
-      enemyTextures.add(new Texture(Gdx.files.internal(Config.ENEMY_PATH + " (" + i + ").png")));
-    }
-
     bulletTexture = new Texture(Gdx.files.internal(Config.BULLET_PATH));
+    for (int i = 0; i < Config.INIT_HERO_COUNT; i++) {
+      heroTextures.add(
+          new Texture(Gdx.files.internal(Config.HERO_PATH + " (" + (i + 1) + ").png")));
+    }
+    for (int i = 0; i < Config.INIT_ENEMY_COUNT; i++) {
+      enemyTextures.add(
+          new Texture(Gdx.files.internal(Config.ENEMY_PATH + " (" + (i + 1) + ").png")));
+    }
   }
 
   private void initMap() {
@@ -155,8 +186,7 @@ public class GameScreen implements Screen {
 
     heroes.forEach(
         hero ->
-            executor.scheduleWithFixedDelay(
-                hero, 0, Config.INTERVAL_MILLI, TimeUnit.MILLISECONDS));
+            executor.scheduleWithFixedDelay(hero, 0, Config.INTERVAL_MILLI, TimeUnit.MILLISECONDS));
 
     enemies.forEach(
         enemy ->
@@ -165,6 +195,47 @@ public class GameScreen implements Screen {
 
     executor.scheduleWithFixedDelay(
         bulletUpdater, 0, Config.INTERVAL_MILLI / 40, TimeUnit.MILLISECONDS);
+  }
+
+  private void stop() {
+    executor.shutdown(); // Disable new tasks from being submitted
+    try {
+      // Wait a while for existing tasks to terminate
+      if (!executor.awaitTermination(Config.INTERVAL_MILLI / 10, TimeUnit.MILLISECONDS)) {
+        executor.shutdownNow(); // Cancel currently executing tasks
+        // Wait a while for tasks to respond to being cancelled
+        if (!executor.awaitTermination(Config.INTERVAL_MILLI / 10, TimeUnit.MILLISECONDS)) {
+          Gdx.app.log("GameScreen", "Pool did not terminate");
+        }
+      }
+    } catch (InterruptedException ie) {
+      // (Re-)Cancel if current thread also interrupted
+      executor.shutdownNow();
+      // Preserve interrupt status
+      Thread.currentThread().interrupt();
+    }
+  }
+
+  private void saveGame() {
+    try {
+      String filename = UUID.randomUUID() + ".ser";
+      FileOutputStream fileOut = new FileOutputStream(filename);
+      ObjectOutputStream out = new ObjectOutputStream(fileOut);
+      out.writeObject(heroes);
+      out.writeObject(enemies);
+      out.writeObject(bullets);
+      out.close();
+      fileOut.close();
+      new Dialog("Success", skin)
+          .text("Game saved successfully to file: " + filename)
+          .button("OK")
+          .show(stage);
+    } catch (IOException i) {
+      new Dialog("Error", skin)
+          .text("An error occurred while saving the game: " + i.getMessage())
+          .button("OK")
+          .show(stage);
+    }
   }
 
   @Override
@@ -187,6 +258,9 @@ public class GameScreen implements Screen {
     drawEntity();
     game.batch.end();
 
+    stage.act(Gdx.graphics.getDeltaTime());
+    stage.draw();
+
     checkGameOver();
   }
 
@@ -208,6 +282,9 @@ public class GameScreen implements Screen {
     heroes.forEach(
         hero -> {
           if (hero == currentHero) {
+            if (hero.isDead()) {
+              hero.changeDieTexture();
+            }
             hero.renderBorder(game.batch);
           }
           hero.render(game.batch);
@@ -219,34 +296,17 @@ public class GameScreen implements Screen {
   }
 
   @Override
-  public void resize(int width, int height) {}
-
-  @Override
-  public void pause() {}
-
-  @Override
-  public void resume() {}
-
-  @Override
-  public void hide() {}
-
-  @Override
   public void dispose() {
-    try {
-      if (executor.awaitTermination(Config.INTERVAL_MILLI / 10, TimeUnit.MILLISECONDS)) {
-        shapeRenderer.dispose();
-      }
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    }
+    super.dispose();
+
+    stop();
+
+    shapeRenderer.dispose();
     bgm.dispose();
 
     heroes.clear();
     enemies.clear();
     bullets.clear();
-    heroTextures.clear();
-    enemyTextures.clear();
-    bulletTexture.dispose();
 
     Gdx.app.log("GameScreen", "end");
   }
@@ -255,7 +315,7 @@ public class GameScreen implements Screen {
 
     @Override
     public boolean keyDown(int keycode) {
-      if (currentHero == null) {
+      if (currentHero.isDead()) {
         return false;
       }
 
@@ -296,7 +356,7 @@ public class GameScreen implements Screen {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-      if (currentHero == null || TimeUtils.millis() - lastTime < Config.INTERVAL_MILLI) {
+      if (currentHero.isDead() || TimeUtils.millis() - lastTime < Config.INTERVAL_MILLI) {
         return false;
       }
 
