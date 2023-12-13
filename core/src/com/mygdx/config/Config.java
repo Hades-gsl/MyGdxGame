@@ -32,6 +32,7 @@ public class Config {
   public static final String BGM_PATH = "sound/bgm.mp3";
   public static final String SHOOT_PATH = "sound/bullet.mp3";
   public static final String RECORD_PATH = "record/";
+  public static final String REPLAY_PATH = "replay/";
   public static final float BUTTON_WIDTH = 150;
   public static final float BUTTON_HEIGHT = 50;
   public static final float BUTTON_PAD = 10;
