@@ -28,8 +28,8 @@ public class MainMenu extends BaseScreen {
           }
         });
 
-    TextButton settingButton = new TextButton("Setting", skin);
-    settingButton.addListener(
+    TextButton mapButton = new TextButton("Map", skin);
+    mapButton.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
@@ -60,7 +60,7 @@ public class MainMenu extends BaseScreen {
 
     table.add(playButton).size(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT).pad(Config.BUTTON_PAD);
     table.row();
-    table.add(settingButton).size(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT).pad(Config.BUTTON_PAD);
+    table.add(mapButton).size(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT).pad(Config.BUTTON_PAD);
     table.row();
     table.add(loadButton).size(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT).pad(Config.BUTTON_PAD);
     table.row();
