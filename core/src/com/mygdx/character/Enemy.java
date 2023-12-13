@@ -15,6 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 public class Enemy extends Character implements Runnable {
+  private static final long serialVersionUID = 1L;
   private Map map;
   private List<Bullet> bullets;
   private List<Hero> heroes;

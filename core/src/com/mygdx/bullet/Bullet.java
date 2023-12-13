@@ -17,6 +17,7 @@ import java.util.List;
 @Getter
 @Setter
 public class Bullet extends Entity {
+  private static final long serialVersionUID = 1L;
   private final float speedX;
   private final float speedY;
   private final float rotation;

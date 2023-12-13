@@ -7,10 +7,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.bullet.Bullet;
 import com.mygdx.config.Config;
 import com.mygdx.matrix.Map;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 /**
  * @author Hades
@@ -18,6 +17,7 @@ import java.util.List;
 @Getter
 @Setter
 public class Hero extends Character implements Runnable {
+  private static final long serialVersionUID = 1L;
   private Map map;
   private List<Bullet> bullets;
   private List<Enemy> enemies;
