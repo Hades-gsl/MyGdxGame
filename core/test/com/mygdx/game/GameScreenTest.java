@@ -24,7 +24,7 @@ class GameScreenTest {
 
   @BeforeEach
   void setUp() {
-    gameScreen = new GameScreen((MyGdxGame) game, true, null, null, null);
+    gameScreen = new GameScreen((MyGdxGame) game, true, null, null, null, null);
   }
 
   @Test
