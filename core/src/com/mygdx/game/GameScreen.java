@@ -7,6 +7,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
@@ -53,7 +54,12 @@ public class GameScreen extends BaseScreen {
   private BulletUpdater bulletUpdater;
   private long lastTime = TimeUtils.millis();
 
-  public GameScreen(MyGdxGame game, boolean isHeadless) {
+  public GameScreen(
+      MyGdxGame game,
+      boolean isHeadless,
+      List<Hero> heroes,
+      List<Enemy> enemies,
+      List<Bullet> bullets) {
     super(game);
 
     if (isHeadless) {
@@ -64,9 +70,9 @@ public class GameScreen extends BaseScreen {
 
     initButton();
 
-    initGame();
+    initGame(heroes, enemies, bullets);
 
-    currentHero = heroes.get(0);
+    currentHero = this.heroes.get(0);
     currentHero.setAI(false);
     multiplexer.addProcessor(new InputHandler());
 
@@ -93,19 +99,47 @@ public class GameScreen extends BaseScreen {
     stage.addActor(saveButton);
   }
 
-  private void initGame() {
+  private void initGame(List<Hero> heroes, List<Enemy> enemies, List<Bullet> bullets) {
     initMap();
     initTexture();
-    heroes = new CopyOnWriteArrayList<>();
-    enemies = new CopyOnWriteArrayList<>();
-    bullets = new CopyOnWriteArrayList<>();
-    initHero();
-    initEnemy();
-    initBullet();
+    if (heroes == null || enemies == null || bullets == null) {
+      this.heroes = new CopyOnWriteArrayList<>();
+      this.enemies = new CopyOnWriteArrayList<>();
+      this.bullets = new CopyOnWriteArrayList<>();
+      initHero();
+      initEnemy();
+    } else {
+      this.heroes = heroes;
+      this.enemies = enemies;
+      this.bullets = bullets;
+      loadTexture();
+    }
+
+    initBulletUpdater();
 
     bgm = Gdx.audio.newMusic(Gdx.files.internal(Config.BGM_PATH));
     bgm.setLooping(true);
     bgm.play();
+  }
+
+  private void loadTexture() {
+    for (int i = 0; i < heroes.size(); i++) {
+      heroes.get(i).setBulletTexture(bulletTexture);
+      heroes.get(i).setCharaterTexture(heroTextures.get(i));
+      heroes.get(i).setSprite(new Sprite(heroTextures.get(i)));
+      heroes.get(i).setDieTexture(new Texture(Gdx.files.internal(Config.DIE_PATH)));
+    }
+    for (int i = 0; i < enemies.size(); i++) {
+      enemies.get(i).setBulletTexture(bulletTexture);
+      enemies.get(i).setCharaterTexture(enemyTextures.get(i));
+      enemies.get(i).setSprite(new Sprite(enemyTextures.get(i)));
+      enemies.get(i).setDieTexture(new Texture(Gdx.files.internal(Config.DIE_PATH)));
+    }
+    for (Bullet bullet : bullets) {
+      bullet.setSprite(new Sprite(bulletTexture));
+      bullet.getSprite().setRotation(bullet.getRotation());
+      bullet.setSound(Gdx.audio.newSound(Gdx.files.internal(Config.SHOOT_PATH)));
+    }
   }
 
   private void initTexture() {
@@ -174,7 +208,7 @@ public class GameScreen extends BaseScreen {
     }
   }
 
-  private void initBullet() {
+  private void initBulletUpdater() {
     bulletUpdater = new BulletUpdater(bullets, heroes, enemies);
   }
 

@@ -24,7 +24,7 @@ public class MainMenu extends BaseScreen {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
             dispose();
-            game.setScreen(new GameScreen(game, false));
+            game.setScreen(new GameScreen(game, false, null, null, null));
           }
         });
 

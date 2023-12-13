@@ -14,6 +14,10 @@ import java.io.*;
  * @author Hades
  */
 public class ReadRecordScreen extends BaseScreen {
+  java.util.List<Hero> heroList;
+  java.util.List<Enemy> enemyList;
+  java.util.List<Bullet> bulletList;
+
   public ReadRecordScreen(MyGdxGame game) {
     super(game);
 
@@ -31,7 +35,7 @@ public class ReadRecordScreen extends BaseScreen {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
             dispose();
-            game.setScreen(new GameScreen(game, false));
+            game.setScreen(new GameScreen(game, false, heroList, enemyList, bulletList));
           }
         });
 
@@ -77,10 +81,6 @@ public class ReadRecordScreen extends BaseScreen {
 
     table.add(backButton).colspan(2).center().pad(Config.BUTTON_PAD);
   }
-
-  java.util.List<Hero> heroList;
-  java.util.List<Enemy> enemyList;
-  java.util.List<Bullet> bulletList;
 
   private void readRecord(String filename) throws IOException, ClassNotFoundException {
     FileInputStream fileIn = new FileInputStream(filename);
