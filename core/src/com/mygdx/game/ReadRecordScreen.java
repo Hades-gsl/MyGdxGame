@@ -21,16 +21,34 @@ public class ReadRecordScreen extends BaseScreen {
   java.util.List<Bullet> bulletList;
   Map map;
 
-  public ReadRecordScreen(MyGdxGame game) {
+  public enum GameAction {
+    LOAD_GAME,
+    VIEW_REPLAY
+  }
+
+  private final String labelText;
+  private final String path;
+
+  public ReadRecordScreen(MyGdxGame game, GameAction action) {
     super(game);
+
+    if (action == GameAction.LOAD_GAME) {
+      labelText = "Load Game";
+      path = Config.RECORD_PATH;
+    } else {
+      labelText = "View Replay";
+      path = Config.REPLAY_PATH;
+    }
 
     initField();
   }
 
   private void initField() {
-    Label titleLabel = new Label("Read Record", skin);
+    Label titleLabel = new Label(labelText, skin);
     table.add(titleLabel).colspan(2).center().pad(Config.BUTTON_PAD);
     table.row();
+
+    final String[] filaPath = new String[1];
 
     TextButton okButton = new TextButton("ok", skin);
     okButton.addListener(
@@ -38,11 +56,15 @@ public class ReadRecordScreen extends BaseScreen {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
             dispose();
-            game.setScreen(new GameScreen(game, false, heroList, enemyList, bulletList, map));
+            if ("Load Game".equals(labelText)) {
+              game.setScreen(new GameScreen(game, false, heroList, enemyList, bulletList, map));
+            } else {
+              game.setScreen(new ReplayScreen(game, filaPath[0]));
+            }
           }
         });
 
-    String[] files = new File(Config.RECORD_PATH).list();
+    String[] files = new File(path).list();
     assert files != null;
     for (int i = 0; i < Config.MAX_RECORD; i++) {
       TextButton recordButton = new TextButton("", skin);
@@ -53,8 +75,9 @@ public class ReadRecordScreen extends BaseScreen {
               @Override
               public void changed(ChangeEvent event, Actor actor) {
                 String record = recordButton.getText().toString();
+                filaPath[0] = path + record;
                 try {
-                  readRecord(Config.RECORD_PATH + record);
+                  readRecord(path + record);
                   new Dialog("Success", skin)
                       .text("Read record successfully")
                       .button(okButton)
@@ -94,6 +117,8 @@ public class ReadRecordScreen extends BaseScreen {
     map = (Map) in.readObject();
     in.close();
     fileIn.close();
+
+    Config.changeConfig(map.getMatrix().length, map.getMatrix()[0].length);
   }
 
   @Override
