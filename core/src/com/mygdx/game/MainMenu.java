@@ -1,9 +1,12 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
 import com.mygdx.config.Config;
 
 /**
@@ -18,6 +21,11 @@ public class MainMenu extends BaseScreen {
   }
 
   private void initButton() {
+    Label label = new Label("Main Menu", skin);
+    label.setColor(Color.BLUE);
+    label.setAlignment(Align.center);
+    label.setFontScale(3);
+
     TextButton playButton = new TextButton("Play", skin);
     playButton.addListener(
         new ChangeListener() {
@@ -28,13 +36,13 @@ public class MainMenu extends BaseScreen {
           }
         });
 
-    TextButton mapButton = new TextButton("Map", skin);
+    TextButton mapButton = new TextButton("Change Map", skin);
     mapButton.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
             dispose();
-            game.setScreen(new SettingScreen(game));
+            game.setScreen(new ChangeMapScreen(game));
           }
         });
 
@@ -44,7 +52,17 @@ public class MainMenu extends BaseScreen {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
             dispose();
-            game.setScreen(new ReadRecordScreen(game));
+            game.setScreen(new ReadRecordScreen(game, ReadRecordScreen.GameAction.LOAD_GAME));
+          }
+        });
+
+    TextButton replayButton = new TextButton("Replay", skin);
+    replayButton.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            dispose();
+            game.setScreen(new ReadRecordScreen(game, ReadRecordScreen.GameAction.VIEW_REPLAY));
           }
         });
 
@@ -58,11 +76,15 @@ public class MainMenu extends BaseScreen {
           }
         });
 
+    table.add(label).pad(Config.BUTTON_PAD);
+    table.row();
     table.add(playButton).size(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT).pad(Config.BUTTON_PAD);
     table.row();
     table.add(mapButton).size(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT).pad(Config.BUTTON_PAD);
     table.row();
     table.add(loadButton).size(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT).pad(Config.BUTTON_PAD);
+    table.row();
+    table.add(replayButton).size(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT).pad(Config.BUTTON_PAD);
     table.row();
     table.add(exitButton).size(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT).pad(Config.BUTTON_PAD);
   }
