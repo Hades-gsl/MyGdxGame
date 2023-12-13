@@ -24,7 +24,7 @@ class GameScreenTest {
 
   @BeforeEach
   void setUp() {
-    gameScreen = new GameScreen((MyGdxGame) game, true);
+    gameScreen = new GameScreen((MyGdxGame) game, true, null, null, null);
   }
 
   @Test
@@ -32,5 +32,4 @@ class GameScreenTest {
     assertNotNull(gameScreen);
     gameScreen.show();
   }
-
 }
