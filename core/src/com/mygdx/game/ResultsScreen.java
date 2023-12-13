@@ -32,9 +32,6 @@ public class ResultsScreen extends BaseScreen {
     label.setColor(Color.BLUE);
     label.setAlignment(Align.center);
     label.setFontScale(4);
-    table.add(label);
-
-    table.row().padTop(40);
 
     TextButton exitButton = new TextButton("Exit", skin);
     exitButton.addListener(
@@ -45,7 +42,22 @@ public class ResultsScreen extends BaseScreen {
             Gdx.app.exit();
           }
         });
-    table.add(exitButton).size(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT);
+
+    TextButton backButton = new TextButton("Back", skin);
+    backButton.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            dispose();
+            game.setScreen(new MainMenu(game));
+          }
+        });
+
+    table.add(label).pad(Config.BUTTON_PAD);
+    table.row();
+    table.add(exitButton).size(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT).pad(Config.BUTTON_PAD);
+    table.row();
+    table.add(backButton).size(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT).pad(Config.BUTTON_PAD);
   }
 
   @Override
