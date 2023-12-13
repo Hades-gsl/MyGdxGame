@@ -12,11 +12,11 @@ import com.mygdx.config.Config;
 /**
  * @author Hades
  */
-public class SettingScreen extends BaseScreen {
+public class ChangeMapScreen extends BaseScreen {
   private TextField rowsField;
   private TextField colsField;
 
-  public SettingScreen(MyGdxGame game) {
+  public ChangeMapScreen(MyGdxGame game) {
     super(game);
 
     initFields();
