@@ -59,7 +59,8 @@ public class GameScreen extends BaseScreen {
       boolean isHeadless,
       List<Hero> heroes,
       List<Enemy> enemies,
-      List<Bullet> bullets) {
+      List<Bullet> bullets,
+      Map map) {
     super(game);
 
     if (isHeadless) {
@@ -68,9 +69,9 @@ public class GameScreen extends BaseScreen {
       shapeRenderer = new ShapeRenderer();
     }
 
-    initButton();
+    initGame(heroes, enemies, bullets, map);
 
-    initGame(heroes, enemies, bullets);
+    initButton();
 
     currentHero = this.heroes.get(0);
     currentHero.setAI(false);
@@ -80,13 +81,12 @@ public class GameScreen extends BaseScreen {
   }
 
   private void initButton() {
-    TextButton saveButton = new TextButton("Save Progress", skin);
-
     Vector3 position = new Vector3(Config.MAP_WIDTH, Config.MAP_HEIGHT, 0);
     camera.project(position);
+
+    TextButton saveButton = new TextButton("Save Progress", skin);
     saveButton.setSize(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT);
     saveButton.setPosition(position.x, position.y, Align.topLeft);
-
     saveButton.addListener(
         new ChangeListener() {
           @Override
@@ -96,22 +96,40 @@ public class GameScreen extends BaseScreen {
           }
         });
 
+    TextButton exitButton = new TextButton("Exit", skin);
+    exitButton.setSize(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT);
+    exitButton.setPosition(position.x, position.y - Config.BUTTON_HEIGHT, Align.topLeft);
+    exitButton.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            dispose();
+            Gdx.app.exit();
+          }
+        });
+
     stage.addActor(saveButton);
+    stage.addActor(exitButton);
   }
 
-  private void initGame(List<Hero> heroes, List<Enemy> enemies, List<Bullet> bullets) {
-    initMap();
+  private void initGame(List<Hero> heroes, List<Enemy> enemies, List<Bullet> bullets, Map map) {
     initTexture();
-    if (heroes == null || enemies == null || bullets == null) {
+    if (heroes == null || enemies == null || bullets == null || map == null) {
+      initMap();
       this.heroes = new CopyOnWriteArrayList<>();
       this.enemies = new CopyOnWriteArrayList<>();
       this.bullets = new CopyOnWriteArrayList<>();
       initHero();
       initEnemy();
     } else {
+      this.map = map;
+      Config.changeConfig(map.getMatrix().length, map.getMatrix()[0].length);
+      camera.setToOrtho(false, Config.CAMERA_WIDTH, Config.CAMERA_HEIGHT);
+
       this.heroes = heroes;
       this.enemies = enemies;
       this.bullets = bullets;
+
       loadTexture();
     }
 
@@ -265,6 +283,7 @@ public class GameScreen extends BaseScreen {
       out.writeObject(heroes);
       out.writeObject(enemies);
       out.writeObject(bullets);
+      out.writeObject(map);
       out.close();
       fileOut.close();
       new Dialog("Success", skin)

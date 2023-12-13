@@ -8,6 +8,8 @@ import com.mygdx.bullet.Bullet;
 import com.mygdx.character.Enemy;
 import com.mygdx.character.Hero;
 import com.mygdx.config.Config;
+import com.mygdx.matrix.Map;
+
 import java.io.*;
 
 /**
@@ -17,6 +19,7 @@ public class ReadRecordScreen extends BaseScreen {
   java.util.List<Hero> heroList;
   java.util.List<Enemy> enemyList;
   java.util.List<Bullet> bulletList;
+  Map map;
 
   public ReadRecordScreen(MyGdxGame game) {
     super(game);
@@ -35,7 +38,7 @@ public class ReadRecordScreen extends BaseScreen {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
             dispose();
-            game.setScreen(new GameScreen(game, false, heroList, enemyList, bulletList));
+            game.setScreen(new GameScreen(game, false, heroList, enemyList, bulletList, map));
           }
         });
 
@@ -88,6 +91,7 @@ public class ReadRecordScreen extends BaseScreen {
     heroList = (java.util.List<Hero>) in.readObject();
     enemyList = (java.util.List<Enemy>) in.readObject();
     bulletList = (java.util.List<Bullet>) in.readObject();
+    map = (Map) in.readObject();
     in.close();
     fileIn.close();
   }

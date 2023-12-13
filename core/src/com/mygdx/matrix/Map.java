@@ -4,12 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.config.Config;
+import lombok.Getter;
 
 import java.io.Serializable;
 
 /**
  * @author Hades
  */
+@Getter
 public class Map implements Serializable {
   private final int[][] matrix;
 
