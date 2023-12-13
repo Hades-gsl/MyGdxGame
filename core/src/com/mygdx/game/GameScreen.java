@@ -6,8 +6,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
@@ -16,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.bullet.Bullet;
 import com.mygdx.bullet.BulletUpdater;
@@ -38,21 +35,17 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Hades
  */
-public class GameScreen extends BaseScreen {
-
+public class GameScreen extends AbstractGameScreen {
   private final ShapeRenderer shapeRenderer;
-  private List<Enemy> enemies;
-  private List<Hero> heroes;
-  private List<Bullet> bullets;
-  private List<Texture> heroTextures;
-  private List<Texture> enemyTextures;
-  private Texture bulletTexture;
-  private Map map;
   private final Hero currentHero;
   private Music bgm;
   private ScheduledThreadPoolExecutor executor;
   private BulletUpdater bulletUpdater;
   private long lastTime = TimeUtils.millis();
+  private boolean isRecording = false;
+  private String recordPath;
+  private FileOutputStream fileOut;
+  private ObjectOutputStream out;
 
   public GameScreen(
       MyGdxGame game,
@@ -84,6 +77,67 @@ public class GameScreen extends BaseScreen {
     Vector3 position = new Vector3(Config.MAP_WIDTH, Config.MAP_HEIGHT, 0);
     camera.project(position);
 
+    initSaveButton(position);
+
+    initReplayButton(position);
+
+    initBackButton(position);
+  }
+
+  private void initBackButton(Vector3 position) {
+    TextButton backButton = new TextButton("Back", skin);
+    backButton.setSize(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT);
+    backButton.setPosition(position.x, position.y - Config.BUTTON_HEIGHT * 2, Align.topLeft);
+    backButton.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            dispose();
+            game.setScreen(new MainMenu(game));
+          }
+        });
+
+    stage.addActor(backButton);
+  }
+
+  private void initReplayButton(Vector3 position) {
+    TextButton replayButton = new TextButton("Start Replay", skin);
+    replayButton.setSize(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT);
+    replayButton.setPosition(position.x, position.y - Config.BUTTON_HEIGHT, Align.topLeft);
+    replayButton.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            TextButton sourceButton = (TextButton) actor;
+            try {
+              if ("Start Replay".contentEquals(sourceButton.getText())) {
+                recordPath = Config.REPLAY_PATH + UUID.randomUUID() + ".ser";
+                fileOut = new FileOutputStream(recordPath);
+                out = new ObjectOutputStream(fileOut);
+                isRecording = true;
+                sourceButton.setText("Stop Replay");
+              } else {
+                isRecording = false;
+                out.close();
+                fileOut.close();
+                sourceButton.setText("Start Replay");
+                new Dialog("Success", skin)
+                    .text("Replay saved successfully to file: " + recordPath.substring(7))
+                    .button("OK")
+                    .show(stage);
+              }
+            } catch (IOException e) {
+              new Dialog("Error", skin)
+                  .text("An error occurred while " + sourceButton.getText() + ": " + e.getMessage())
+                  .button("OK")
+                  .show(stage);
+            }
+          }
+        });
+    stage.addActor(replayButton);
+  }
+
+  private void initSaveButton(Vector3 position) {
     TextButton saveButton = new TextButton("Save Progress", skin);
     saveButton.setSize(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT);
     saveButton.setPosition(position.x, position.y, Align.topLeft);
@@ -95,25 +149,10 @@ public class GameScreen extends BaseScreen {
             saveGame();
           }
         });
-
-    TextButton exitButton = new TextButton("Exit", skin);
-    exitButton.setSize(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT);
-    exitButton.setPosition(position.x, position.y - Config.BUTTON_HEIGHT, Align.topLeft);
-    exitButton.addListener(
-        new ChangeListener() {
-          @Override
-          public void changed(ChangeEvent event, Actor actor) {
-            dispose();
-            Gdx.app.exit();
-          }
-        });
-
     stage.addActor(saveButton);
-    stage.addActor(exitButton);
   }
 
   private void initGame(List<Hero> heroes, List<Enemy> enemies, List<Bullet> bullets, Map map) {
-    initTexture();
     if (heroes == null || enemies == null || bullets == null || map == null) {
       initMap();
       this.heroes = new CopyOnWriteArrayList<>();
@@ -123,9 +162,6 @@ public class GameScreen extends BaseScreen {
       initEnemy();
     } else {
       this.map = map;
-      Config.changeConfig(map.getMatrix().length, map.getMatrix()[0].length);
-      camera.setToOrtho(false, Config.CAMERA_WIDTH, Config.CAMERA_HEIGHT);
-
       this.heroes = heroes;
       this.enemies = enemies;
       this.bullets = bullets;
@@ -138,40 +174,6 @@ public class GameScreen extends BaseScreen {
     bgm = Gdx.audio.newMusic(Gdx.files.internal(Config.BGM_PATH));
     bgm.setLooping(true);
     bgm.play();
-  }
-
-  private void loadTexture() {
-    for (int i = 0; i < heroes.size(); i++) {
-      heroes.get(i).setBulletTexture(bulletTexture);
-      heroes.get(i).setCharaterTexture(heroTextures.get(i));
-      heroes.get(i).setSprite(new Sprite(heroTextures.get(i)));
-      heroes.get(i).setDieTexture(new Texture(Gdx.files.internal(Config.DIE_PATH)));
-    }
-    for (int i = 0; i < enemies.size(); i++) {
-      enemies.get(i).setBulletTexture(bulletTexture);
-      enemies.get(i).setCharaterTexture(enemyTextures.get(i));
-      enemies.get(i).setSprite(new Sprite(enemyTextures.get(i)));
-      enemies.get(i).setDieTexture(new Texture(Gdx.files.internal(Config.DIE_PATH)));
-    }
-    for (Bullet bullet : bullets) {
-      bullet.setSprite(new Sprite(bulletTexture));
-      bullet.getSprite().setRotation(bullet.getRotation());
-      bullet.setSound(Gdx.audio.newSound(Gdx.files.internal(Config.SHOOT_PATH)));
-    }
-  }
-
-  private void initTexture() {
-    heroTextures = new CopyOnWriteArrayList<>();
-    enemyTextures = new CopyOnWriteArrayList<>();
-    bulletTexture = new Texture(Gdx.files.internal(Config.BULLET_PATH));
-    for (int i = 0; i < Config.INIT_HERO_COUNT; i++) {
-      heroTextures.add(
-          new Texture(Gdx.files.internal(Config.HERO_PATH + " (" + (i + 1) + ").png")));
-    }
-    for (int i = 0; i < Config.INIT_ENEMY_COUNT; i++) {
-      enemyTextures.add(
-          new Texture(Gdx.files.internal(Config.ENEMY_PATH + " (" + (i + 1) + ").png")));
-    }
   }
 
   private void initMap() {
@@ -298,6 +300,24 @@ public class GameScreen extends BaseScreen {
     }
   }
 
+  private void record() {
+    if (isRecording) {
+      try {
+        out.writeObject(heroes);
+        out.writeObject(enemies);
+        out.writeObject(bullets);
+        out.writeObject(map);
+        out.flush();
+        out.reset();
+      } catch (IOException e) {
+        new Dialog("Error", skin)
+            .text("An error occurred while recording the game: " + e.getMessage())
+            .button("OK")
+            .show(stage);
+      }
+    }
+  }
+
   @Override
   public void show() {
     Gdx.app.log("GameScreen", "start");
@@ -305,20 +325,19 @@ public class GameScreen extends BaseScreen {
 
   @Override
   public void render(float delta) {
-    ScreenUtils.clear(Config.BACKGROUND_COLOR);
+    record();
 
-    camera.update();
+    super.render(delta);
 
     shapeRenderer.setProjectionMatrix(camera.combined);
     map.render(shapeRenderer);
     shapeRenderer.end();
 
-    game.batch.setProjectionMatrix(camera.combined);
     game.batch.begin();
     drawEntity();
     game.batch.end();
 
-    stage.act(Gdx.graphics.getDeltaTime());
+    stage.act(delta);
     stage.draw();
 
     checkGameOver();
@@ -367,6 +386,18 @@ public class GameScreen extends BaseScreen {
     heroes.clear();
     enemies.clear();
     bullets.clear();
+
+    try {
+      if (out != null) {
+        out.close();
+      }
+      if (fileOut != null) {
+        fileOut.close();
+      }
+    } catch (IOException e) {
+      Gdx.app.log("GameScreen", "error when close file: " + e.getMessage());
+      Gdx.app.exit();
+    }
 
     Gdx.app.log("GameScreen", "end");
   }
