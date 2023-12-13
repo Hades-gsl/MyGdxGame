@@ -4,12 +4,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.mygdx.bullet.Bullet;
 import com.mygdx.matrix.Map;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 /**
  * @author Hades
  */
+@Getter
+@Setter
 public class Enemy extends Character implements Runnable {
   private Map map;
   private List<Bullet> bullets;
@@ -25,18 +29,6 @@ public class Enemy extends Character implements Runnable {
     this.map = map;
     this.bullets = bullets;
     this.heroes = heroes;
-  }
-
-  public Map getMap() {
-    return map;
-  }
-
-  public List<Bullet> getBullets() {
-    return bullets;
-  }
-
-  public List<Hero> getHeroes() {
-    return heroes;
   }
 
   // AI

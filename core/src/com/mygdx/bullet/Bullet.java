@@ -6,15 +6,21 @@ import com.badlogic.gdx.graphics.Texture;
 import com.mygdx.character.Character;
 import com.mygdx.config.Config;
 import com.mygdx.entity.Entity;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
 /**
  * @author Hades
  */
+@Getter
+@Setter
 public class Bullet extends Entity {
   private final float speedX;
   private final float speedY;
-  private final transient Sound sound;
+  private final float rotation;
+  private transient Sound sound;
 
   public Bullet(
       float x,
@@ -28,6 +34,7 @@ public class Bullet extends Entity {
 
     this.speedX = speedX;
     this.speedY = speedY;
+    this.rotation = rotation;
     getSprite().setRotation(rotation);
 
     sound = Gdx.audio.newSound(Gdx.files.internal(Config.SHOOT_PATH));

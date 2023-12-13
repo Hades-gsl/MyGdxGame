@@ -7,11 +7,16 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.bullet.Bullet;
 import com.mygdx.config.Config;
 import com.mygdx.matrix.Map;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
 /**
  * @author Hades
  */
+@Getter
+@Setter
 public class Hero extends Character implements Runnable {
   private Map map;
   private List<Bullet> bullets;
@@ -28,18 +33,6 @@ public class Hero extends Character implements Runnable {
     this.map = map;
     this.bullets = bullets;
     this.enemies = enemies;
-  }
-
-  public Map getMap() {
-    return map;
-  }
-
-  public List<Bullet> getBullets() {
-    return bullets;
-  }
-
-  public List<Enemy> getEnemies() {
-    return enemies;
   }
 
   // attack by click
@@ -65,14 +58,6 @@ public class Hero extends Character implements Runnable {
     synchronized (map) {
       randomMove(map, false);
     }
-  }
-
-  public void setAI(boolean isAI) {
-    this.isAI = isAI;
-  }
-
-  public boolean isAI() {
-    return isAI;
   }
 
   public void renderBorder(SpriteBatch batch) {

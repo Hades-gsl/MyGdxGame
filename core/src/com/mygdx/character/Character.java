@@ -7,17 +7,21 @@ import com.mygdx.bullet.Bullet;
 import com.mygdx.config.Config;
 import com.mygdx.entity.Entity;
 import com.mygdx.matrix.Map;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 /**
  * @author Hades
  */
+@Getter
+@Setter
 public class Character extends Entity {
-  private final transient Texture bulletTexture;
+  private transient Texture bulletTexture;
   private final int[] dirs = {0, 0, 1, 0, -1, 0};
-  private final transient Texture charaterTexture;
-  private final transient Texture dieTexture;
+  private transient Texture charaterTexture;
+  private transient Texture dieTexture;
 
   public Character(int x, int y, int hp, int atk, Texture charactorTexture, Texture bulletTexture) {
     super(x, y, hp, atk, charactorTexture);
@@ -86,9 +90,5 @@ public class Character extends Entity {
     if (getSprite().getTexture() == charaterTexture) {
       getSprite().setTexture(dieTexture);
     }
-  }
-
-  public Texture getDieTexture() {
-    return dieTexture;
   }
 }

@@ -4,18 +4,22 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 
 /**
  * @author Hades
  */
+@Getter
+@Setter
 public abstract class Entity implements Serializable {
   private float x;
   private float y;
   private int hp;
   private int atk;
-  private final transient Sprite sprite;
+  private transient Sprite sprite;
 
   public Entity(float x, float y, int hp, int atk, Texture texture) {
     this.x = x;
@@ -25,45 +29,9 @@ public abstract class Entity implements Serializable {
     sprite = new Sprite(texture);
   }
 
-  public float getX() {
-    return x;
-  }
-
-  public float getY() {
-    return y;
-  }
-
-  public int getHp() {
-    return hp;
-  }
-
-  public int getAtk() {
-    return atk;
-  }
-
-  public Sprite getSprite() {
-    return sprite;
-  }
-
-  public void setX(float x) {
-    this.x = x;
-  }
-
-  public void setY(float y) {
-    this.y = y;
-  }
-
   public void move(float x, float y) {
     setX(x);
     setY(y);
-  }
-
-  public void setHp(int hp) {
-    this.hp = hp;
-  }
-
-  public void setAtk(int atk) {
-    this.atk = atk;
   }
 
   public boolean isDead() {
