@@ -33,6 +33,10 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * This class represents the game screen where the game is played. It extends the AbstractGameScreen
+ * class and implements the game logic. It manages the game entities (heroes, enemies, bullets), the
+ * game map, and the game state. It also handles user input and game rendering.
+ *
  * @author Hades
  */
 public class GameScreen extends AbstractGameScreen {
@@ -47,6 +51,17 @@ public class GameScreen extends AbstractGameScreen {
   private FileOutputStream fileOut;
   private ObjectOutputStream out;
 
+  /**
+   * The constructor initializes the game screen. It sets up the game entities, the game map, and
+   * the game state. It also sets up the user interface and starts the game.
+   *
+   * @param game the game instance
+   * @param isHeadless whether the game is running in headless mode
+   * @param heroes the list of heroes
+   * @param enemies the list of enemies
+   * @param bullets the list of bullets
+   * @param map the game map
+   */
   public GameScreen(
       MyGdxGame game,
       boolean isHeadless,
@@ -73,6 +88,7 @@ public class GameScreen extends AbstractGameScreen {
     start();
   }
 
+  /** Initializes the game buttons (save, replay, back) and adds them to the stage. */
   private void initButton() {
     Vector3 position = new Vector3(Config.MAP_WIDTH, Config.MAP_HEIGHT, 0);
     camera.project(position);
@@ -84,6 +100,11 @@ public class GameScreen extends AbstractGameScreen {
     initBackButton(position);
   }
 
+  /**
+   * Initializes the back button and adds it to the stage.
+   *
+   * @param position the position where the button will be placed
+   */
   private void initBackButton(Vector3 position) {
     TextButton backButton = new TextButton("Back", skin);
     backButton.setSize(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT);
@@ -100,6 +121,11 @@ public class GameScreen extends AbstractGameScreen {
     stage.addActor(backButton);
   }
 
+  /**
+   * Initializes the replay button and adds it to the stage.
+   *
+   * @param position the position where the button will be placed
+   */
   private void initReplayButton(Vector3 position) {
     TextButton replayButton = new TextButton("Start Replay", skin);
     replayButton.setSize(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT);
@@ -137,6 +163,11 @@ public class GameScreen extends AbstractGameScreen {
     stage.addActor(replayButton);
   }
 
+  /**
+   * Initializes the save button and adds it to the stage.
+   *
+   * @param position the position where the button will be placed
+   */
   private void initSaveButton(Vector3 position) {
     TextButton saveButton = new TextButton("Save Progress", skin);
     saveButton.setSize(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT);
@@ -152,6 +183,15 @@ public class GameScreen extends AbstractGameScreen {
     stage.addActor(saveButton);
   }
 
+  /**
+   * This method initializes the game. It sets up the game entities, the game map, and the game
+   * state.
+   *
+   * @param heroes the list of heroes
+   * @param enemies the list of enemies
+   * @param bullets the list of bullets
+   * @param map the game map
+   */
   private void initGame(List<Hero> heroes, List<Enemy> enemies, List<Bullet> bullets, Map map) {
     if (heroes == null || enemies == null || bullets == null || map == null) {
       initMap();
@@ -176,10 +216,12 @@ public class GameScreen extends AbstractGameScreen {
     bgm.play();
   }
 
+  /** Initializes the game map. */
   private void initMap() {
     map = new Map((int) Config.ROWS, (int) Config.COLS);
   }
 
+  /** Initializes the heroes and adds them to the heroes list. */
   private void initHero() {
     for (int i = 0; i < Config.INIT_HERO_COUNT; i++) {
       int x = (int) (MathUtils.random(Config.ROWS / 2));
@@ -204,6 +246,7 @@ public class GameScreen extends AbstractGameScreen {
     }
   }
 
+  /** Initializes the enemies and adds them to the enemies list. */
   private void initEnemy() {
     for (int i = 0; i < Config.INIT_ENEMY_COUNT; i++) {
       int x = (int) (MathUtils.random(Config.ROWS / 2, Config.ROWS));
@@ -228,10 +271,12 @@ public class GameScreen extends AbstractGameScreen {
     }
   }
 
+  /** Initializes the bullet updater. */
   private void initBulletUpdater() {
     bulletUpdater = new BulletUpdater(bullets, heroes, enemies);
   }
 
+  /** This method starts the game. It schedules the game entities to update at fixed intervals. */
   private void start() {
     executor =
         new ScheduledThreadPoolExecutor(Config.INIT_ENEMY_COUNT + Config.INIT_HERO_COUNT + 1);
@@ -249,6 +294,7 @@ public class GameScreen extends AbstractGameScreen {
         bulletUpdater, 0, Config.INTERVAL_MILLI / 40, TimeUnit.MILLISECONDS);
   }
 
+  /** This method stops the game. It stops the game entities from updating. */
   private void stop() {
     executor.shutdown(); // Disable new tasks from being submitted
     try {
@@ -268,6 +314,7 @@ public class GameScreen extends AbstractGameScreen {
     }
   }
 
+  /** This method saves the game. It serializes the game entities and the game map to a file. */
   private void saveGame() {
     TextButton okButton = new TextButton("OK", skin);
     okButton.addListener(
@@ -300,6 +347,10 @@ public class GameScreen extends AbstractGameScreen {
     }
   }
 
+  /**
+   * This method records the game. It serializes the game entities and the game map to a file at
+   * each frame.
+   */
   private void record() {
     if (isRecording) {
       try {
@@ -343,6 +394,9 @@ public class GameScreen extends AbstractGameScreen {
     checkGameOver();
   }
 
+  /**
+   * This method checks if the game is over. The game is over if all heroes or all enemies are dead.
+   */
   private void checkGameOver() {
     if (isEmpty(heroes)) {
       dispose();
@@ -353,10 +407,17 @@ public class GameScreen extends AbstractGameScreen {
     }
   }
 
+  /**
+   * This method checks if all characters in a list are dead.
+   *
+   * @param characters the list of characters
+   * @return true if all characters are dead, false otherwise
+   */
   private boolean isEmpty(List<? extends Character> characters) {
     return characters.stream().allMatch(Entity::isDead);
   }
 
+  /** Draws the game entities (heroes, enemies, bullets). */
   private void drawEntity() {
     heroes.forEach(
         hero -> {
@@ -402,6 +463,10 @@ public class GameScreen extends AbstractGameScreen {
     Gdx.app.log("GameScreen", "end");
   }
 
+  /**
+   * This class handles user input. It implements the InputProcessor interface and overrides its
+   * methods to handle key presses and touch events.
+   */
   class InputHandler implements InputProcessor {
 
     @Override

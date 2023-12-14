@@ -10,6 +10,11 @@ import lombok.Setter;
 import java.io.Serializable;
 
 /**
+ * This abstract class represents an entity in the game. It implements the Serializable interface
+ * for saving and loading the game state. It contains properties for the position, health points,
+ * attack points and sprite of the entity. It also contains methods for moving the entity, checking
+ * if the entity is dead, rendering the entity and getting the bounding rectangle of the entity.
+ *
  * @author Hades
  */
 @Getter
@@ -21,6 +26,16 @@ public abstract class Entity implements Serializable {
   private int atk;
   private transient Sprite sprite;
 
+  /**
+   * Constructor for the Entity class. It initializes the position, health points, attack points and
+   * sprite of the entity.
+   *
+   * @param x The x-coordinate of the entity.
+   * @param y The y-coordinate of the entity.
+   * @param hp The health points of the entity.
+   * @param atk The attack points of the entity.
+   * @param texture The texture of the entity.
+   */
   public Entity(float x, float y, int hp, int atk, Texture texture) {
     this.x = x;
     this.y = y;
@@ -29,20 +44,42 @@ public abstract class Entity implements Serializable {
     sprite = new Sprite(texture);
   }
 
+  /**
+   * This method moves the entity to a new position.
+   *
+   * @param x The new x-coordinate.
+   * @param y The new y-coordinate.
+   */
   public void move(float x, float y) {
     setX(x);
     setY(y);
   }
 
+  /**
+   * This method checks if the entity is dead. An entity is dead if its health points are less than
+   * or equal to 0.
+   *
+   * @return true if the entity is dead, false otherwise.
+   */
   public boolean isDead() {
     return hp <= 0;
   }
 
+  /**
+   * This method renders the entity. It sets the position of the sprite and draws it.
+   *
+   * @param batch The SpriteBatch to use for drawing.
+   */
   public void render(SpriteBatch batch) {
     sprite.setPosition(x, y);
     sprite.draw(batch);
   }
 
+  /**
+   * This method gets the bounding rectangle of the entity.
+   *
+   * @return The bounding rectangle of the entity.
+   */
   public Rectangle getBound() {
     return sprite.getBoundingRectangle();
   }

@@ -11,6 +11,9 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.config.Config;
 
 /**
+ * This class represents a base screen for the game. It implements the Screen interface. It contains
+ * common properties and methods for screens.
+ *
  * @author Hades
  */
 public class BaseScreen implements Screen {
@@ -22,6 +25,12 @@ public class BaseScreen implements Screen {
   protected final Skin skin;
   protected InputMultiplexer multiplexer;
 
+  /**
+   * Constructor for the BaseScreen class. It initializes the game, camera, stage, table, skin and
+   * multiplexer.
+   *
+   * @param game The game instance.
+   */
   public BaseScreen(MyGdxGame game) {
     this.game = game;
 
@@ -44,6 +53,12 @@ public class BaseScreen implements Screen {
   @Override
   public void show() {}
 
+  /**
+   * This method is called every frame to render the screen. It clears the screen, updates the
+   * camera, sets the projection matrix for the batch, acts the stage and draws the stage.
+   *
+   * @param delta The time in seconds since the last frame.
+   */
   @Override
   public void render(float delta) {
     ScreenUtils.clear(Config.BACKGROUND_COLOR);
@@ -55,6 +70,12 @@ public class BaseScreen implements Screen {
     stage.draw();
   }
 
+  /**
+   * This method is called when the screen is resized. It updates the viewport of the stage.
+   *
+   * @param width The new width.
+   * @param height The new height.
+   */
   @Override
   public void resize(int width, int height) {
     stage.getViewport().update(width, height, true);
@@ -69,6 +90,7 @@ public class BaseScreen implements Screen {
   @Override
   public void hide() {}
 
+  /** This method is called when the screen is disposed. It disposes the stage and the skin. */
   @Override
   public void dispose() {
     stage.dispose();

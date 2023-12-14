@@ -10,16 +10,25 @@ import com.badlogic.gdx.utils.Align;
 import com.mygdx.config.Config;
 
 /**
+ * This class represents the main menu screen of the game. It extends the BaseScreen class. It
+ * contains buttons for starting a new game, changing the map, loading a game, viewing a replay and
+ * exiting the game.
+ *
  * @author Hades
  */
 public class MainMenu extends BaseScreen {
-
+  /**
+   * Constructor for the MainMenu class. It initializes the game and the buttons.
+   *
+   * @param game The game instance.
+   */
   public MainMenu(final MyGdxGame game) {
     super(game);
 
     initButton();
   }
 
+  /** This method initializes the buttons. It adds them to the table and sets their listeners. */
   private void initButton() {
     Label label = new Label("Main Menu", skin);
     label.setColor(Color.BLUE);
@@ -89,11 +98,19 @@ public class MainMenu extends BaseScreen {
     table.add(exitButton).size(Config.BUTTON_WIDTH, Config.BUTTON_HEIGHT).pad(Config.BUTTON_PAD);
   }
 
+  /**
+   * This method is called when the screen becomes the current screen. It logs the start of the main
+   * menu screen.
+   */
   @Override
   public void show() {
     Gdx.app.log("MainMenu", "start");
   }
 
+  /**
+   * This method is called when the screen is no longer the current screen. It disposes the screen
+   * and logs the end of the main menu screen.
+   */
   @Override
   public void dispose() {
     super.dispose();

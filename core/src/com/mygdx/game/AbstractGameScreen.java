@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
+ * This abstract class represents a game screen. It extends the BaseScreen class. It contains common
+ * properties and methods for game screens.
+ *
  * @author Hades
  */
 public abstract class AbstractGameScreen extends BaseScreen {
@@ -23,12 +26,21 @@ public abstract class AbstractGameScreen extends BaseScreen {
   protected List<Bullet> bullets;
   protected Map map;
 
+  /**
+   * Constructor for the AbstractGameScreen class. It initializes the game and textures.
+   *
+   * @param game The game instance.
+   */
   public AbstractGameScreen(MyGdxGame game) {
     super(game);
 
     initTexture();
   }
 
+  /**
+   * This method initializes the textures for the heroes, enemies and bullets. It loads the textures
+   * from the files specified in the Config class.
+   */
   protected void initTexture() {
     heroTextures = new CopyOnWriteArrayList<>();
     enemyTextures = new CopyOnWriteArrayList<>();
@@ -43,6 +55,10 @@ public abstract class AbstractGameScreen extends BaseScreen {
     }
   }
 
+  /**
+   * This method loads the textures for the heroes, enemies and bullets. It sets the textures and
+   * sprites for the heroes, enemies and bullets. It also sets the sound for the bullets.
+   */
   protected void loadTexture() {
     for (int i = 0; i < heroes.size(); i++) {
       Hero hero = heroes.get(i);

@@ -10,18 +10,31 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.mygdx.config.Config;
 
 /**
+ * This class represents the screen for changing the map size. It extends the BaseScreen class. It
+ * contains text fields for the number of rows and columns and buttons for applying the changes and
+ * going back.
+ *
  * @author Hades
  */
 public class ChangeMapScreen extends BaseScreen {
   private TextField rowsField;
   private TextField colsField;
 
+  /**
+   * Constructor for the ChangeMapScreen class. It initializes the game and the text fields.
+   *
+   * @param game The game instance.
+   */
   public ChangeMapScreen(MyGdxGame game) {
     super(game);
 
     initFields();
   }
 
+  /**
+   * This method initializes the text fields and buttons. It adds them to the table and sets their
+   * listeners.
+   */
   private void initFields() {
     Label titleLabel = new Label("Modify Map Size", skin);
     table.add(titleLabel).colspan(2).center().pad(Config.BUTTON_PAD);
@@ -80,15 +93,30 @@ public class ChangeMapScreen extends BaseScreen {
     table.add(backButton).colspan(2).center().pad(Config.BUTTON_PAD);
   }
 
+  /**
+   * This method checks if the input value is valid. A valid value is an even number between 6 and
+   * 12.
+   *
+   * @param value The input value.
+   * @return true if the value is valid, false otherwise.
+   */
   private boolean isValidInput(int value) {
     return value >= 6 && value <= 12 && value % 2 == 0;
   }
 
+  /**
+   * This method is called when the screen becomes the current screen. It logs the start of the
+   * settings screen.
+   */
   @Override
   public void show() {
     Gdx.app.log("SettingScreen", "start");
   }
 
+  /**
+   * This method is called when the screen is no longer the current screen. It disposes the screen
+   * and logs the end of the settings screen.
+   */
   @Override
   public void dispose() {
     super.dispose();
