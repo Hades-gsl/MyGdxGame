@@ -6,8 +6,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
@@ -16,21 +16,16 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.bullet.Bullet;
-import com.mygdx.bullet.BulletUpdater;
-import com.mygdx.character.Character;
 import com.mygdx.character.Enemy;
 import com.mygdx.character.Hero;
 import com.mygdx.config.Config;
-import com.mygdx.entity.Entity;
-import com.mygdx.matrix.Map;
+import com.mygdx.controller.GameController;
+import com.mygdx.map.Map;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * This class represents the game screen where the game is played. It extends the AbstractGameScreen
@@ -39,17 +34,15 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Hades
  */
-public class GameScreen extends AbstractGameScreen {
+public class GameScreen extends BaseScreen {
   private final ShapeRenderer shapeRenderer;
   private final Hero currentHero;
   private Music bgm;
-  private ScheduledThreadPoolExecutor executor;
-  private BulletUpdater bulletUpdater;
-  private long lastTime = TimeUtils.millis();
   private boolean isRecording = false;
   private String recordPath;
   private FileOutputStream fileOut;
   private ObjectOutputStream out;
+  private final GameController gameController;
 
   /**
    * The constructor initializes the game screen. It sets up the game entities, the game map, and
@@ -65,9 +58,9 @@ public class GameScreen extends AbstractGameScreen {
   public GameScreen(
       MyGdxGame game,
       boolean isHeadless,
-      List<Hero> heroes,
-      List<Enemy> enemies,
-      List<Bullet> bullets,
+      CopyOnWriteArrayList<Hero> heroes,
+      CopyOnWriteArrayList<Enemy> enemies,
+      CopyOnWriteArrayList<Bullet> bullets,
       Map map) {
     super(game);
 
@@ -77,15 +70,19 @@ public class GameScreen extends AbstractGameScreen {
       shapeRenderer = new ShapeRenderer();
     }
 
-    initGame(heroes, enemies, bullets, map);
+    gameController = new GameController(heroes, enemies, bullets, map);
+
+    bgm = Gdx.audio.newMusic(Gdx.files.internal(Config.BGM_PATH));
+    bgm.setLooping(true);
+    bgm.play();
 
     initButton();
 
-    currentHero = this.heroes.get(0);
+    currentHero = gameController.getGameState().getHeroes().get(0);
     currentHero.setAI(false);
-    multiplexer.addProcessor(new InputHandler());
+    multiplexer.addProcessor(new InputHandler(currentHero, camera));
 
-    start();
+    gameController.start();
   }
 
   /** Initializes the game buttons (save, replay, back) and adds them to the stage. */
@@ -176,142 +173,11 @@ public class GameScreen extends AbstractGameScreen {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
-            stop();
+            gameController.stop();
             saveGame();
           }
         });
     stage.addActor(saveButton);
-  }
-
-  /**
-   * This method initializes the game. It sets up the game entities, the game map, and the game
-   * state.
-   *
-   * @param heroes the list of heroes
-   * @param enemies the list of enemies
-   * @param bullets the list of bullets
-   * @param map the game map
-   */
-  private void initGame(List<Hero> heroes, List<Enemy> enemies, List<Bullet> bullets, Map map) {
-    if (heroes == null || enemies == null || bullets == null || map == null) {
-      initMap();
-      this.heroes = new CopyOnWriteArrayList<>();
-      this.enemies = new CopyOnWriteArrayList<>();
-      this.bullets = new CopyOnWriteArrayList<>();
-      initHero();
-      initEnemy();
-    } else {
-      this.map = map;
-      this.heroes = heroes;
-      this.enemies = enemies;
-      this.bullets = bullets;
-
-      loadTexture();
-    }
-
-    initBulletUpdater();
-
-    bgm = Gdx.audio.newMusic(Gdx.files.internal(Config.BGM_PATH));
-    bgm.setLooping(true);
-    bgm.play();
-  }
-
-  /** Initializes the game map. */
-  private void initMap() {
-    map = new Map((int) Config.ROWS, (int) Config.COLS);
-  }
-
-  /** Initializes the heroes and adds them to the heroes list. */
-  private void initHero() {
-    for (int i = 0; i < Config.INIT_HERO_COUNT; i++) {
-      int x = (int) (MathUtils.random(Config.ROWS / 2));
-      int y = (int) (MathUtils.random(Config.COLS));
-
-      while (map.get((int) (x * Config.CELL_SIZE), (int) (y * Config.CELL_SIZE)) != 0) {
-        x = (int) (MathUtils.random(Config.ROWS / 2));
-        y = (int) (MathUtils.random(Config.COLS));
-      }
-
-      map.set((int) (x * Config.CELL_SIZE), (int) (y * Config.CELL_SIZE), 1);
-      Hero hero =
-          new Hero(
-              (int) (x * Config.CELL_SIZE),
-              (int) (y * Config.CELL_SIZE),
-              Config.HERO_HP,
-              Config.HERO_ATK,
-              heroTextures.get(i),
-              bulletTexture);
-      hero.set(map, bullets, enemies);
-      heroes.add(hero);
-    }
-  }
-
-  /** Initializes the enemies and adds them to the enemies list. */
-  private void initEnemy() {
-    for (int i = 0; i < Config.INIT_ENEMY_COUNT; i++) {
-      int x = (int) (MathUtils.random(Config.ROWS / 2, Config.ROWS));
-      int y = (int) (MathUtils.random(Config.COLS));
-
-      while (map.get((int) (x * Config.CELL_SIZE), (int) (y * Config.CELL_SIZE)) != 0) {
-        x = (int) (MathUtils.random(Config.ROWS / 2, Config.ROWS));
-        y = (int) (MathUtils.random(Config.COLS));
-      }
-
-      map.set((int) (x * Config.CELL_SIZE), (int) (y * Config.CELL_SIZE), 1);
-      Enemy enemy =
-          new Enemy(
-              (int) (x * Config.CELL_SIZE),
-              (int) (y * Config.CELL_SIZE),
-              Config.ENEMY_HP,
-              Config.ENEMY_ATK,
-              enemyTextures.get(i),
-              bulletTexture);
-      enemy.set(map, bullets, heroes);
-      enemies.add(enemy);
-    }
-  }
-
-  /** Initializes the bullet updater. */
-  private void initBulletUpdater() {
-    bulletUpdater = new BulletUpdater(bullets, heroes, enemies);
-  }
-
-  /** This method starts the game. It schedules the game entities to update at fixed intervals. */
-  private void start() {
-    executor =
-        new ScheduledThreadPoolExecutor(Config.INIT_ENEMY_COUNT + Config.INIT_HERO_COUNT + 1);
-
-    heroes.forEach(
-        hero ->
-            executor.scheduleWithFixedDelay(hero, 0, Config.INTERVAL_MILLI, TimeUnit.MILLISECONDS));
-
-    enemies.forEach(
-        enemy ->
-            executor.scheduleWithFixedDelay(
-                enemy, 0, Config.INTERVAL_MILLI, TimeUnit.MILLISECONDS));
-
-    executor.scheduleWithFixedDelay(
-        bulletUpdater, 0, Config.INTERVAL_MILLI / 40, TimeUnit.MILLISECONDS);
-  }
-
-  /** This method stops the game. It stops the game entities from updating. */
-  private void stop() {
-    executor.shutdown(); // Disable new tasks from being submitted
-    try {
-      // Wait a while for existing tasks to terminate
-      if (!executor.awaitTermination(Config.INTERVAL_MILLI / 10, TimeUnit.MILLISECONDS)) {
-        executor.shutdownNow(); // Cancel currently executing tasks
-        // Wait a while for tasks to respond to being cancelled
-        if (!executor.awaitTermination(Config.INTERVAL_MILLI / 10, TimeUnit.MILLISECONDS)) {
-          Gdx.app.log("GameScreen", "Pool did not terminate");
-        }
-      }
-    } catch (InterruptedException ie) {
-      // (Re-)Cancel if current thread also interrupted
-      executor.shutdownNow();
-      // Preserve interrupt status
-      Thread.currentThread().interrupt();
-    }
   }
 
   /** This method saves the game. It serializes the game entities and the game map to a file. */
@@ -321,7 +187,7 @@ public class GameScreen extends AbstractGameScreen {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
-            start();
+            gameController.start();
           }
         });
 
@@ -329,10 +195,10 @@ public class GameScreen extends AbstractGameScreen {
       String filename = Config.RECORD_PATH + UUID.randomUUID() + ".ser";
       FileOutputStream fileOut = new FileOutputStream(filename);
       ObjectOutputStream out = new ObjectOutputStream(fileOut);
-      out.writeObject(heroes);
-      out.writeObject(enemies);
-      out.writeObject(bullets);
-      out.writeObject(map);
+      out.writeObject(gameController.getGameState().getHeroes());
+      out.writeObject(gameController.getGameState().getEnemies());
+      out.writeObject(gameController.getGameState().getBullets());
+      out.writeObject(gameController.getGameState().getMap());
       out.close();
       fileOut.close();
       new Dialog("Success", skin)
@@ -354,10 +220,10 @@ public class GameScreen extends AbstractGameScreen {
   private void record() {
     if (isRecording) {
       try {
-        out.writeObject(heroes);
-        out.writeObject(enemies);
-        out.writeObject(bullets);
-        out.writeObject(map);
+        out.writeObject(gameController.getGameState().getHeroes());
+        out.writeObject(gameController.getGameState().getEnemies());
+        out.writeObject(gameController.getGameState().getBullets());
+        out.writeObject(gameController.getGameState().getMap());
         out.flush();
         out.reset();
       } catch (IOException e) {
@@ -381,7 +247,7 @@ public class GameScreen extends AbstractGameScreen {
     super.render(delta);
 
     shapeRenderer.setProjectionMatrix(camera.combined);
-    map.render(shapeRenderer);
+    gameController.getGameState().getMap().render(shapeRenderer);
     shapeRenderer.end();
 
     game.batch.begin();
@@ -398,55 +264,41 @@ public class GameScreen extends AbstractGameScreen {
    * This method checks if the game is over. The game is over if all heroes or all enemies are dead.
    */
   private void checkGameOver() {
-    if (isEmpty(heroes)) {
+    if (gameController.isHeroEmpty()) {
       dispose();
       game.setScreen(new ResultsScreen(game, "Enemy"));
-    } else if (isEmpty(enemies)) {
+    } else if (gameController.isEnemyEmpty()) {
       dispose();
       game.setScreen(new ResultsScreen(game, "Hero"));
     }
   }
 
-  /**
-   * This method checks if all characters in a list are dead.
-   *
-   * @param characters the list of characters
-   * @return true if all characters are dead, false otherwise
-   */
-  private boolean isEmpty(List<? extends Character> characters) {
-    return characters.stream().allMatch(Entity::isDead);
-  }
-
   /** Draws the game entities (heroes, enemies, bullets). */
   private void drawEntity() {
-    heroes.forEach(
-        hero -> {
-          if (hero == currentHero) {
-            if (hero.isDead()) {
-              hero.changeDieTexture();
-            }
-            hero.renderBorder(game.batch);
-          }
-          hero.render(game.batch);
-        });
+    gameController
+        .getGameState()
+        .getHeroes()
+        .forEach(
+            hero -> {
+              if (hero == currentHero) {
+                hero.renderBorder(game.batch);
+              }
+              hero.render(game.batch);
+            });
 
-    enemies.forEach(enemy -> enemy.render(game.batch));
+    gameController.getGameState().getEnemies().forEach(enemy -> enemy.render(game.batch));
 
-    bullets.forEach(bullet -> bullet.render(game.batch));
+    gameController.getGameState().getBullets().forEach(bullet -> bullet.render(game.batch));
   }
 
   @Override
   public void dispose() {
     super.dispose();
 
-    stop();
+    gameController.stop();
 
     shapeRenderer.dispose();
     bgm.dispose();
-
-    heroes.clear();
-    enemies.clear();
-    bullets.clear();
 
     try {
       if (out != null) {
@@ -467,13 +319,24 @@ public class GameScreen extends AbstractGameScreen {
    * This class handles user input. It implements the InputProcessor interface and overrides its
    * methods to handle key presses and touch events.
    */
-  class InputHandler implements InputProcessor {
+  public static class InputHandler implements InputProcessor {
+    private long lastTimeMove = TimeUtils.millis();
+    private long lastTimeAttack = TimeUtils.millis();
+    private final Hero currentHero;
+    private final OrthographicCamera camera;
+
+    public InputHandler(Hero currentHero, OrthographicCamera camera) {
+      this.currentHero = currentHero;
+      this.camera = camera;
+    }
 
     @Override
     public boolean keyDown(int keycode) {
-      if (currentHero.isDead()) {
+      if (currentHero.isDead() || TimeUtils.millis() - lastTimeMove < Config.INTERVAL_MILLI / 2) {
         return false;
       }
+
+      lastTimeMove = TimeUtils.millis();
 
       int dx = 0, dy = 0;
       switch (keycode) {
@@ -512,11 +375,11 @@ public class GameScreen extends AbstractGameScreen {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-      if (currentHero.isDead() || TimeUtils.millis() - lastTime < Config.INTERVAL_MILLI) {
+      if (currentHero.isDead() || TimeUtils.millis() - lastTimeAttack < Config.INTERVAL_MILLI) {
         return false;
       }
 
-      lastTime = TimeUtils.millis();
+      lastTimeAttack = TimeUtils.millis();
 
       Vector3 v3 = new Vector3(screenX, screenY, 0);
       camera.unproject(v3);
