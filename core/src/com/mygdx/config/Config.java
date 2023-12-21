@@ -23,9 +23,6 @@ public class Config {
   public static float CAMERA_WIDTH = ROWS * CELL_SIZE + 100;
   public static float CAMERA_HEIGHT = COLS * CELL_SIZE;
 
-  // The number of characters in the game
-  public static final int CHARACTER_COUNT = 6;
-
   // The initial number of heroes and enemies in the game
   public static int INIT_HERO_COUNT = (int) ((ROWS + COLS) / 4);
   public static int INIT_ENEMY_COUNT = (int) ((ROWS + COLS) / 4);
@@ -71,6 +68,12 @@ public class Config {
   // The maximum number of records in the game
   public static final int MAX_RECORD = 10;
 
+  public static final String SERVER_ADDRESS = "localhost";
+  public static final int SERVER_PORT = 9999;
+  public static final int MULTI_HERO_COUNT = 3;
+  public static final int BUFFER_SIZE = 1024 * 10;
+  public static final int MAX_CONNECTIONS = 3;
+
   /**
    * This method changes the configuration of the game. It updates the number of rows and columns,
    * the width and height of the camera, the initial number of heroes and enemies, and the width and
@@ -88,5 +91,9 @@ public class Config {
     INIT_ENEMY_COUNT = (int) ((ROWS + COLS) / 4);
     MAP_WIDTH = ROWS * CELL_SIZE;
     MAP_HEIGHT = COLS * CELL_SIZE;
+  }
+
+  public static void changeHeroCount(int count) {
+    INIT_HERO_COUNT = count;
   }
 }
