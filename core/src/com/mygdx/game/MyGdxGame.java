@@ -12,16 +12,16 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
  * @author Hades
  */
 public class MyGdxGame extends Game {
-  SpriteBatch batch;
+  public SpriteBatch batch;
 
   /**
    * This method is called when the application is created. It initializes the SpriteBatch and sets
-   * the screen to the main menu screen.
+   * the screen to the start screen.
    */
   @Override
   public void create() {
     batch = new SpriteBatch();
-    this.setScreen(new MainMenu(this));
+    this.setScreen(new StartScreen(this));
   }
 
   /**
