@@ -41,11 +41,9 @@
 
     https://www.bilibili.com/video/BV1na4y1Z7FN/
 
-
 # Phase2: 构建
 
 项目基于Gradle进行构建，在项目根目录下执行`./gradlew desktop:dist`即可构建项目，构建结果在`desktop/build/libs`目录下。
-
 
 # phase3: 测试
 
@@ -75,3 +73,32 @@
 ## 4. 演示视频
 
     https://www.bilibili.com/video/BV14j411p7nS/
+
+# phase5: 网络通信
+
+## 1. 通信协议
+
+通信协议采用了自定义的协议，有一个 `GameState` 类表示游戏的全局状态，有若干个 `GameEvent` 类表示游戏中发生的事件。
+`GameState` 类包含了游戏中所有单位的状态，`GameEvent` 类包含了游戏中发生的事件的类型和相关的参数。
+使用 `jackson` 库来实现序列化和反序列化，发送时会将 `GameState` 类和 `GameEvent` 类序列化为 `json` 字符串，
+接收时会将 `json` 字符串反序列化为 `GameState` 类和 `GameEvent` 类。
+
+## 2. 通信流程
+
+客户端和服务器端都会维护一个 `GameState` 类，表示游戏的全局状态，客户端和服务器端都会根据 `GameState` 类来更新游戏状态。
+首先客户端会向服务器端建立连接，服务器端会将客户端加入游戏后的 `GameState` 类发送给客户端，
+客户端接收到 `GameState` 类后，会根据 `GameState` 类来更新游戏状态，然后开始游戏。
+游戏进行时，客户端会将用户的操作转换为 `GameEvent` 类，发送给服务器端，服务器端接收到 `GameEvent` 类后，
+会根据 `GameEvent` 类来更新游戏状态，然后将 `GameEvent` 类广播给所有客户端，客户端接收到 `GameEvent` 类后，
+会根据 `GameEvent` 类来更新游戏状态，然后继续游戏。
+
+## 3. 通信实现
+
+服务端使用 `NIO` 的 `Selector` 类来实现非阻塞的 `ServerSocketChannel` 类，客户端使用阻塞的 `Socket` 类来实现。
+客户端和服务器端都维护了一个 `GameState` 类，使用 `ObjectMapper` 类来实现序列化和反序列化。
+服务端为每个 `SocketChannel`，维护一个 `buffer`，用来存储将要发送的数据，并在可写的时候发送出去，
+客户端则直接进行接收和发送数据。
+
+## 4. 演示视频
+
+    https://www.bilibili.com/video/BV1dp4y1o7Wg/
