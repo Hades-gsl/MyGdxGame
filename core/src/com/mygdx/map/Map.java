@@ -1,10 +1,11 @@
-package com.mygdx.matrix;
+package com.mygdx.map;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.config.Config;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -16,8 +17,9 @@ import java.io.Serializable;
  * @author Hades
  */
 @Getter
+@NoArgsConstructor
 public class Map implements Serializable {
-  private final int[][] matrix;
+  private int[][] matrix;
 
   /**
    * Constructor for the Map class. It initializes the matrix with the specified number of rows and
@@ -47,6 +49,8 @@ public class Map implements Serializable {
    * @return The value of the cell.
    */
   public int get(int x, int y) {
+    assert x % Config.CELL_SIZE == 0 && y % Config.CELL_SIZE == 0;
+
     if (x < 0 || x >= Config.MAP_WIDTH || y < 0 || y >= Config.MAP_HEIGHT) {
       return 2;
     }
@@ -63,6 +67,8 @@ public class Map implements Serializable {
    * @param value The value to set.
    */
   public void set(int x, int y, int value) {
+    assert x % Config.CELL_SIZE == 0 && y % Config.CELL_SIZE == 0 && (value == 1 || value == 0);
+
     if (x < 0 || x >= Config.MAP_WIDTH || y < 0 || y >= Config.MAP_HEIGHT) {
       return;
     }

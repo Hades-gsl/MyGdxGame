@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.mygdx.bullet.Bullet;
 import com.mygdx.config.Config;
 import com.mygdx.game.MyGdxGame;
-import com.mygdx.matrix.Map;
+import com.mygdx.map.Map;
 import com.mygdx.testRunner.TestRunner;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

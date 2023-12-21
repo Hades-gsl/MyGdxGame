@@ -1,4 +1,4 @@
-package com.mygdx.matrix;
+package com.mygdx.map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
