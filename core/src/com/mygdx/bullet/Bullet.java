@@ -3,10 +3,14 @@ package com.mygdx.bullet;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Rectangle;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mygdx.character.Character;
 import com.mygdx.config.Config;
 import com.mygdx.entity.Entity;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
@@ -22,11 +26,13 @@ import java.util.List;
  */
 @Getter
 @Setter
+@NoArgsConstructor
+@JsonIgnoreProperties({"sprite", "sound"})
 public class Bullet extends Entity {
   private static final long serialVersionUID = 1L;
-  private final float speedX;
-  private final float speedY;
-  private final float rotation;
+  private float speedX;
+  private float speedY;
+  private float rotation;
   private transient Sound sound;
 
   /**
@@ -79,6 +85,10 @@ public class Bullet extends Entity {
               character.setHp(character.getHp() - getAtk());
               sound.play();
               setHp(0);
+
+              if (character.isDead()) {
+                character.changeDieTexture();
+              }
             });
   }
 
@@ -88,10 +98,17 @@ public class Bullet extends Entity {
    *
    * @return true if the bullet is dead, false otherwise.
    */
+  @JsonIgnore
   @Override
   public boolean isDead() {
     float x = getX() + (float) getSprite().getTexture().getWidth() / 2;
     float y = getY() + (float) getSprite().getTexture().getHeight() / 2;
     return x < 0 || x > Config.MAP_WIDTH || y < 0 || y > Config.MAP_HEIGHT || super.isDead();
+  }
+
+  @JsonIgnore
+  @Override
+  public Rectangle getBound() {
+    return super.getBound();
   }
 }

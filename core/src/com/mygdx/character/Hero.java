@@ -4,11 +4,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.mygdx.bullet.Bullet;
+import com.badlogic.gdx.math.Rectangle;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mygdx.config.Config;
-import com.mygdx.matrix.Map;
-import java.util.List;
+import com.mygdx.event.CharacterMove;
+import com.mygdx.event.GameEvent;
+import com.mygdx.map.Map;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -24,11 +28,10 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@NoArgsConstructor
+@JsonIgnoreProperties({"gameState", "bulletTexture", "charaterTexture", "dieTexture", "sprite"})
 public class Hero extends Character implements Runnable {
   private static final long serialVersionUID = 1L;
-  private Map map;
-  private List<Bullet> bullets;
-  private List<Enemy> enemies;
   private boolean isAI = true;
 
   /**
@@ -49,26 +52,13 @@ public class Hero extends Character implements Runnable {
   }
 
   /**
-   * This method sets the game map, bullets and enemies.
-   *
-   * @param map The game map.
-   * @param bullets The list of bullets.
-   * @param enemies The list of enemies.
-   */
-  public void set(Map map, List<Bullet> bullets, List<Enemy> enemies) {
-    this.map = map;
-    this.bullets = bullets;
-    this.enemies = enemies;
-  }
-
-  /**
    * This method updates the hero's state by attacking a position.
    *
    * @param x The x-coordinate of the position.
    * @param y The y-coordinate of the position.
    */
   public void update(float x, float y) {
-    attack(x, y, bullets);
+    attack(x, y, gameState.getBullets());
   }
 
   /**
@@ -78,12 +68,22 @@ public class Hero extends Character implements Runnable {
    * @param dy The change in the y-coordinate.
    */
   public void update(int dx, int dy) {
+    assert dx % Config.CELL_SIZE == 0 && dy % Config.CELL_SIZE == 0;
+
+    Map map = gameState.getMap();
     synchronized (map) {
       if (map.get((int) (getX() + dx), (int) (getY() + dy)) == 0
           && (getX() + dx) / Config.CELL_SIZE < Config.ROWS / 2) {
         map.set((int) getX(), (int) getY(), 0);
         map.set((int) (getX() + dx), (int) (getY() + dy), 1);
         move(getX() + dx, getY() + dy);
+
+        gameState.notifyObservers(
+            new CharacterMove(
+                (int) (dx / Config.CELL_SIZE),
+                (int) (dy / Config.CELL_SIZE),
+                getId(),
+                GameEvent.Type.HERO_MOVE));
       }
     }
   }
@@ -93,9 +93,9 @@ public class Hero extends Character implements Runnable {
    * moving randomly.
    */
   public void update() {
-    attackMinHp(bullets, enemies);
-    synchronized (map) {
-      randomMove(map, false);
+    attackMinHp(gameState.getBullets(), gameState.getEnemies());
+    synchronized (gameState.getMap()) {
+      randomMove(gameState.getMap(), false);
     }
   }
 
@@ -121,14 +121,20 @@ public class Hero extends Character implements Runnable {
    */
   @Override
   public void run() {
-    if (!isAI) {
-      return;
-    }
-
-    if (!isDead()) {
+    if (isAI && !isDead()) {
       update();
-    } else {
-      changeDieTexture();
     }
+  }
+
+  @JsonIgnore
+  @Override
+  public boolean isDead() {
+    return super.isDead();
+  }
+
+  @JsonIgnore
+  @Override
+  public Rectangle getBound() {
+    return super.getBound();
   }
 }

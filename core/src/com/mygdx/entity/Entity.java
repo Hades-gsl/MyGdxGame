@@ -4,10 +4,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import lombok.Getter;
-import lombok.Setter;
-
+import com.mygdx.config.Config;
 import java.io.Serializable;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * This abstract class represents an entity in the game. It implements the Serializable interface
@@ -19,6 +20,7 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
+@NoArgsConstructor
 public abstract class Entity implements Serializable {
   private float x;
   private float y;
@@ -51,6 +53,8 @@ public abstract class Entity implements Serializable {
    * @param y The new y-coordinate.
    */
   public void move(float x, float y) {
+    assert x % Config.CELL_SIZE == 0 && y % Config.CELL_SIZE == 0;
+
     setX(x);
     setY(y);
   }

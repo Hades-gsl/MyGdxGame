@@ -2,12 +2,12 @@ package com.mygdx.character;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.mygdx.bullet.Bullet;
-import com.mygdx.matrix.Map;
+import com.badlogic.gdx.math.Rectangle;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 /**
  * This class represents an enemy character in the game. It extends the Character class and
@@ -20,11 +20,10 @@ import java.util.List;
  */
 @Getter
 @Setter
+@NoArgsConstructor
+@JsonIgnoreProperties({"gameState", "bulletTexture", "charaterTexture", "dieTexture", "sprite"})
 public class Enemy extends Character implements Runnable {
   private static final long serialVersionUID = 1L;
-  private Map map;
-  private List<Bullet> bullets;
-  private List<Hero> heroes;
 
   /**
    * Constructor for the Enemy class. It initializes the enemy's position, health points, attack
@@ -39,20 +38,8 @@ public class Enemy extends Character implements Runnable {
    */
   public Enemy(int x, int y, int hp, int atk, Texture enemyTexture, Texture bulletTexture) {
     super(x, y, hp, atk, enemyTexture, bulletTexture);
-    Gdx.app.log("Enemy", "x: " + x + ", y: " + y);
-  }
 
-  /**
-   * This method sets the game map, bullets and heroes.
-   *
-   * @param map The game map.
-   * @param bullets The list of bullets.
-   * @param heroes The list of heroes.
-   */
-  public void set(Map map, List<Bullet> bullets, List<Hero> heroes) {
-    this.map = map;
-    this.bullets = bullets;
-    this.heroes = heroes;
+    Gdx.app.log("Enemy", "x: " + x + ", y: " + y);
   }
 
   /**
@@ -60,9 +47,9 @@ public class Enemy extends Character implements Runnable {
    * moving randomly.
    */
   public void update() {
-    attackMinHp(bullets, heroes);
-    synchronized (map) {
-      randomMove(map, true);
+    attackMinHp(gameState.getBullets(), gameState.getHeroes());
+    synchronized (gameState.getMap()) {
+      randomMove(gameState.getMap(), true);
     }
   }
 
@@ -74,8 +61,18 @@ public class Enemy extends Character implements Runnable {
   public void run() {
     if (!isDead()) {
       update();
-    } else {
-      changeDieTexture();
     }
+  }
+
+  @JsonIgnore
+  @Override
+  public boolean isDead() {
+    return super.isDead();
+  }
+
+  @JsonIgnore
+  @Override
+  public Rectangle getBound() {
+    return super.getBound();
   }
 }
