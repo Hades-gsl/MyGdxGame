@@ -1,7 +1,8 @@
 package com.mygdx.bullet;
 
-import com.mygdx.character.Enemy;
-import com.mygdx.character.Hero;
+import com.mygdx.controller.GameState;
+import lombok.Setter;
+
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -16,23 +17,16 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author Hades
  */
+@Setter
 public class BulletUpdater implements Runnable {
-  private final List<Bullet> bullets;
-  private final List<Hero> heroes;
-  private final List<Enemy> enemies;
+  GameState gameState;
 
   /**
    * Constructor for the BulletUpdater class. It initializes the list of bullets, heroes, and
    * enemies.
-   *
-   * @param bullets The list of bullets.
-   * @param heroes The list of heroes.
-   * @param enemies The list of enemies.
    */
-  public BulletUpdater(List<Bullet> bullets, List<Hero> heroes, List<Enemy> enemies) {
-    this.bullets = bullets;
-    this.heroes = heroes;
-    this.enemies = enemies;
+  public BulletUpdater(GameState gameState) {
+    this.gameState = gameState;
   }
 
   /**
@@ -43,17 +37,19 @@ public class BulletUpdater implements Runnable {
   @Override
   public void run() {
     List<Bullet> dead = new CopyOnWriteArrayList<>();
-    bullets.forEach(
-        bullet -> {
-          if (bullet.getSprite().getRotation() > 90 || bullet.getSprite().getRotation() < -90) {
-            bullet.update(heroes);
-          } else {
-            bullet.update(enemies);
-          }
-          if (bullet.isDead()) {
-            dead.add(bullet);
-          }
-        });
-    bullets.removeAll(dead);
+    gameState
+        .getBullets()
+        .forEach(
+            bullet -> {
+              if (bullet.getSprite().getRotation() > 90 || bullet.getSprite().getRotation() < -90) {
+                bullet.update(gameState.getHeroes());
+              } else {
+                bullet.update(gameState.getEnemies());
+              }
+              if (bullet.isDead()) {
+                dead.add(bullet);
+              }
+            });
+    gameState.getBullets().removeAll(dead);
   }
 }

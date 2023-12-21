@@ -9,12 +9,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.mygdx.bullet.Bullet;
 import com.mygdx.character.Enemy;
 import com.mygdx.character.Hero;
-import com.mygdx.matrix.Map;
+import com.mygdx.controller.GameController;
+import com.mygdx.map.Map;
 import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * This class represents the replay screen of the game. It extends the AbstractGameScreen class. It
@@ -22,11 +23,12 @@ import java.util.List;
  *
  * @author Hades
  */
-public class ReplayScreen extends AbstractGameScreen {
+public class ReplayScreen extends BaseScreen {
   private FileInputStream fileIn;
   private ObjectInputStream in;
   private final ShapeRenderer shapeRenderer;
   private boolean isEnd = false;
+  GameController gameController;
 
   /**
    * Constructor for the ReplayScreen class. It initializes the shapeRenderer and opens the file
@@ -39,6 +41,7 @@ public class ReplayScreen extends AbstractGameScreen {
     super(game);
 
     shapeRenderer = new ShapeRenderer();
+    gameController = new GameController();
 
     try {
       fileIn = new FileInputStream(filePath);
@@ -57,11 +60,11 @@ public class ReplayScreen extends AbstractGameScreen {
    */
   private void readRecord() {
     try {
-      heroes = (List<Hero>) in.readObject();
-      enemies = (List<Enemy>) in.readObject();
-      bullets = (List<Bullet>) in.readObject();
-      map = (Map) in.readObject();
-      loadTexture();
+      gameController.getGameState().setHeroes((CopyOnWriteArrayList<Hero>) in.readObject());
+      gameController.getGameState().setEnemies((CopyOnWriteArrayList<Enemy>) in.readObject());
+      gameController.getGameState().setBullets((CopyOnWriteArrayList<Bullet>) in.readObject());
+      gameController.getGameState().setMap((Map) in.readObject());
+      gameController.loadTexture();
     } catch (EOFException e) {
       TextButton okButton = new TextButton("ok", skin);
       okButton.addListener(
@@ -97,13 +100,13 @@ public class ReplayScreen extends AbstractGameScreen {
     super.render(delta);
 
     shapeRenderer.setProjectionMatrix(camera.combined);
-    map.render(shapeRenderer);
+    gameController.getGameState().getMap().render(shapeRenderer);
     shapeRenderer.end();
 
     game.batch.begin();
-    heroes.forEach(hero -> hero.render(game.batch));
-    enemies.forEach(enemy -> enemy.render(game.batch));
-    bullets.forEach(bullet -> bullet.render(game.batch));
+    gameController.getGameState().getHeroes().forEach(hero -> hero.render(game.batch));
+    gameController.getGameState().getEnemies().forEach(enemy -> enemy.render(game.batch));
+    gameController.getGameState().getBullets().forEach(bullet -> bullet.render(game.batch));
     game.batch.end();
 
     stage.act(delta);

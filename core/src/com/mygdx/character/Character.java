@@ -1,16 +1,20 @@
 package com.mygdx.character;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.mygdx.bullet.Bullet;
 import com.mygdx.config.Config;
+import com.mygdx.controller.GameState;
+import com.mygdx.controller.TextureManager;
 import com.mygdx.entity.Entity;
-import com.mygdx.matrix.Map;
-import lombok.Getter;
-import lombok.Setter;
-
+import com.mygdx.event.CharacterAttack;
+import com.mygdx.event.CharacterMove;
+import com.mygdx.event.GameEvent;
+import com.mygdx.map.Map;
 import java.util.List;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * This class represents a character in the game. It extends the Entity class. It contains
@@ -26,11 +30,14 @@ import java.util.List;
  */
 @Getter
 @Setter
+@NoArgsConstructor
 public class Character extends Entity {
   private transient Texture bulletTexture;
   private final int[] dirs = {0, 0, 1, 0, -1, 0};
   private transient Texture charaterTexture;
   private transient Texture dieTexture;
+  private String id;
+  protected GameState gameState;
 
   /**
    * Constructor for the Character class. It initializes the character's position, health points,
@@ -48,7 +55,7 @@ public class Character extends Entity {
 
     this.charaterTexture = charactorTexture;
     this.bulletTexture = bulletTexture;
-    this.dieTexture = new Texture(Gdx.files.internal(Config.DIE_PATH));
+    this.dieTexture = TextureManager.getInstance().getDieTexture();
   }
 
   /**
@@ -85,6 +92,16 @@ public class Character extends Entity {
             speedY,
             rotation,
             bulletTexture));
+
+    gameState.notifyObservers(
+        new CharacterAttack(
+            getX() + Config.CELL_SIZE / 2,
+            getY() + Config.CELL_SIZE / 2,
+            getAtk(),
+            speedX,
+            speedY,
+            rotation,
+            GameEvent.Type.CHARACTER_ATTACK));
   }
 
   /**
@@ -135,6 +152,13 @@ public class Character extends Entity {
           (int) (getY() + dirs[dir + 1] * Config.CELL_SIZE),
           1);
       move(getX() + dirs[dir] * Config.CELL_SIZE, getY() + dirs[dir + 1] * Config.CELL_SIZE);
+
+      gameState.notifyObservers(
+          new CharacterMove(
+              dirs[dir],
+              dirs[dir + 1],
+              id,
+              isGreaterHalf ? GameEvent.Type.ENEMY_MOVE : GameEvent.Type.HERO_MOVE));
     }
   }
 
@@ -143,8 +167,6 @@ public class Character extends Entity {
    * character's original texture, it sets the texture to the die texture.
    */
   public void changeDieTexture() {
-    if (getSprite().getTexture() == charaterTexture) {
-      getSprite().setTexture(dieTexture);
-    }
+    getSprite().setTexture(dieTexture);
   }
 }

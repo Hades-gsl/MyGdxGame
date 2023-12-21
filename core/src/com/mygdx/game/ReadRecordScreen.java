@@ -8,9 +8,10 @@ import com.mygdx.bullet.Bullet;
 import com.mygdx.character.Enemy;
 import com.mygdx.character.Hero;
 import com.mygdx.config.Config;
-import com.mygdx.matrix.Map;
+import com.mygdx.map.Map;
 
 import java.io.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * This class represents the screen for reading game records. It extends the BaseScreen class. It
@@ -21,9 +22,9 @@ import java.io.*;
  * @author Hades
  */
 public class ReadRecordScreen extends BaseScreen {
-  java.util.List<Hero> heroList;
-  java.util.List<Enemy> enemyList;
-  java.util.List<Bullet> bulletList;
+  CopyOnWriteArrayList<Hero> heroList;
+  CopyOnWriteArrayList<Enemy> enemyList;
+  CopyOnWriteArrayList<Bullet> bulletList;
   Map map;
 
   /** This enumeration represents the game action. It can be either load game or view replay. */
@@ -136,9 +137,9 @@ public class ReadRecordScreen extends BaseScreen {
   private void readRecord(String filename) throws IOException, ClassNotFoundException {
     FileInputStream fileIn = new FileInputStream(filename);
     ObjectInputStream in = new ObjectInputStream(fileIn);
-    heroList = (java.util.List<Hero>) in.readObject();
-    enemyList = (java.util.List<Enemy>) in.readObject();
-    bulletList = (java.util.List<Bullet>) in.readObject();
+    heroList = (CopyOnWriteArrayList<Hero>) in.readObject();
+    enemyList = (CopyOnWriteArrayList<Enemy>) in.readObject();
+    bulletList = (CopyOnWriteArrayList<Bullet>) in.readObject();
     map = (Map) in.readObject();
     in.close();
     fileIn.close();
