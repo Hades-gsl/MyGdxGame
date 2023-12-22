@@ -18,8 +18,13 @@ import java.io.ObjectInputStream;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * This class represents the replay screen of the game. It extends the AbstractGameScreen class. It
- * is responsible for reading the game state from a file and replaying it.
+ * The ReplayScreen class is responsible for replaying a previously played game. It extends the
+ * BaseScreen class and overrides its methods to provide the functionality for replaying a game. It
+ * reads the game state from a file and renders it on the screen. The game state includes the
+ * positions and states of the heroes, enemies, and bullets, as well as the game map. The game state
+ * is read from the file at a constant rate, giving the illusion of replaying the game in real time.
+ * When the end of the file is reached, a dialog is displayed indicating the end of the replay. The
+ * user can then choose to return to the main menu.
  *
  * @author Hades
  */

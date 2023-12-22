@@ -10,9 +10,7 @@ import com.mygdx.character.Character;
 import com.mygdx.config.Config;
 import com.mygdx.entity.Entity;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.util.List;
 
 /**
@@ -26,14 +24,13 @@ import java.util.List;
  */
 @Getter
 @Setter
-@NoArgsConstructor
 @JsonIgnoreProperties({"sprite", "sound"})
 public class Bullet extends Entity {
   private static final long serialVersionUID = 1L;
-  private float speedX;
-  private float speedY;
-  private float rotation;
-  private transient Sound sound;
+  private float speedX; // The speed of the bullet in the x direction.
+  private float speedY; // The speed of the bullet in the y direction.
+  private float rotation; // The rotation of the bullet.
+  private transient Sound sound; // The sound that is played when the bullet hits a character.
 
   /**
    * Constructor for the Bullet class. It initializes the bullet's position, attack points, speed,
@@ -106,6 +103,11 @@ public class Bullet extends Entity {
     return x < 0 || x > Config.MAP_WIDTH || y < 0 || y > Config.MAP_HEIGHT || super.isDead();
   }
 
+  /**
+   * This method returns the bounding rectangle of the bullet. It is used for collision detection.
+   *
+   * @return The bounding rectangle of the bullet.
+   */
   @JsonIgnore
   @Override
   public Rectangle getBound() {

@@ -32,12 +32,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Character extends Entity {
-  private transient Texture bulletTexture;
-  private final int[] dirs = {0, 0, 1, 0, -1, 0};
-  private transient Texture charaterTexture;
-  private transient Texture dieTexture;
-  private String id;
-  protected GameState gameState;
+  private transient Texture bulletTexture; // The texture of the bullet that the character fires.
+  private final int[] dirs = {
+    0, 0, 1, 0, -1, 0
+  }; // The possible directions that the character can move in.
+  private transient Texture charaterTexture; // The texture of the character.
+  private transient Texture dieTexture; // The texture of the character when it dies.
+  private String id; // The id of the character.
+  protected GameState gameState; // The current game state.
 
   /**
    * Constructor for the Character class. It initializes the character's position, health points,
@@ -71,13 +73,17 @@ public class Character extends Entity {
   }
 
   /**
-   * This method makes the character attack a position. It creates a new bullet and adds it to the
-   * list of bullets. The bullet's position is the same as the character's position. The bullet's
-   * direction is towards the position.
+   * This method makes the character attack a specific position. It calculates the rotation angle
+   * between the character's current position and the target position, and then calculates the
+   * bullet's speed in the x and y directions based on this rotation angle. A new bullet is created
+   * with these properties and added to the list of bullets. The bullet's position is set to the
+   * character's current position, and its attack points are the same as the character's attack
+   * points. After the bullet is created, a CharacterAttack event is generated and sent to all
+   * observers of the game state.
    *
-   * @param x The x-coordinate of the position.
-   * @param y The y-coordinate of the position.
-   * @param bullets The list of bullets.
+   * @param x The x-coordinate of the target position.
+   * @param y The y-coordinate of the target position.
+   * @param bullets The list of bullets in the game.
    */
   public void attack(float x, float y, List<Bullet> bullets) {
     float rotation = MathUtils.atan2(y - getY(), x - getX()) * MathUtils.radiansToDegrees;
@@ -126,9 +132,12 @@ public class Character extends Entity {
   }
 
   /**
-   * This method makes the character move randomly. It changes the character's direction at each
-   * frame. The character can move up, down, left, or right. The character cannot move outside the
-   * game map.
+   * This method makes the character move randomly on the game map. The character can move up, down,
+   * left, or right. The character's movement is restricted to the game map and it cannot move
+   * outside the game map. The method first generates a random direction for the character's
+   * movement. Then it checks if the new position is within the game map and is not occupied. If
+   * these conditions are met, the character is moved to the new position. After the character is
+   * moved, a CharacterMove event is generated and sent to all observers of the game state.
    *
    * @param map The game map.
    * @param isGreaterHalf A flag indicating if the character is in the greater half of the map.

@@ -3,11 +3,15 @@ package com.mygdx.config;
 import com.badlogic.gdx.graphics.Color;
 
 /**
- * This class contains the configuration for the game. It includes constants for the game settings
- * and paths for the game assets. It also includes a method for changing the configuration. The
- * configuration can be changed at runtime. The changes will affect the game immediately. The
- * configuration is static, so it can be accessed from anywhere in the game without creating an
- * instance of this class.
+ * This class contains the configuration for the game. It includes the number of rows and columns in
+ * the game map, the size of a cell in the game map, the width and height of the game camera, the
+ * initial number of heroes and enemies in the game, the speed of the bullets in the game, the width
+ * and height of the game map, the health points and attack points of the heroes and enemies, the
+ * interval in milliseconds between updates of the game entities, the width of the border in the
+ * game map, the background color of the game, the paths of the game assets, the width, height and
+ * padding of the buttons in the game, the maximum number of records in the game, the server address
+ * and port, the maximum number of connections, and the buffer size. It also contains methods for
+ * changing the configuration of the game.
  *
  * @author Hades
  */
@@ -68,10 +72,19 @@ public class Config {
   // The maximum number of records in the game
   public static final int MAX_RECORD = 10;
 
+  // The address of the server. This is typically an IP address or a domain name.
   public static final String SERVER_ADDRESS = "localhost";
+
+  // The port number on the server to connect to.
   public static final int SERVER_PORT = 9999;
+
+  // The number of hero characters in a multiplayer game.
   public static final int MULTI_HERO_COUNT = 3;
+
+  // The size of the buffer used for network communication. This is typically a power of 2.
   public static final int BUFFER_SIZE = 1024 * 10;
+
+  // The maximum number of simultaneous connections the server will accept.
   public static final int MAX_CONNECTIONS = 3;
 
   /**
@@ -93,6 +106,11 @@ public class Config {
     MAP_HEIGHT = COLS * CELL_SIZE;
   }
 
+  /**
+   * This method changes the initial number of heroes in the game.
+   *
+   * @param count The new initial number of heroes.
+   */
   public static void changeHeroCount(int count) {
     INIT_HERO_COUNT = count;
   }

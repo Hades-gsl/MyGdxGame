@@ -24,6 +24,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
+ * This class is responsible for controlling the game logic. It initializes the game state, starts
+ * and stops the game, and handles events. It uses the BulletUpdater to update the bullets in the
+ * game. It uses a ScheduledThreadPoolExecutor to schedule tasks at fixed rate. It also handles the
+ * texture loading for the game entities.
+ *
  * @author Hades
  */
 @Getter
@@ -34,6 +39,15 @@ public class GameController {
   private ScheduledThreadPoolExecutor executor;
   private GameState gameState;
 
+  /**
+   * Constructor for GameController. Initializes the game with provided heroes, enemies, bullets,
+   * and map. If any of these are null, it initializes a new game.
+   *
+   * @param heroes List of heroes
+   * @param enemies List of enemies
+   * @param bullets List of bullets
+   * @param map Game map
+   */
   public GameController(
       CopyOnWriteArrayList<Hero> heroes,
       CopyOnWriteArrayList<Enemy> enemies,
@@ -46,6 +60,15 @@ public class GameController {
     }
   }
 
+  /**
+   * Initializes the game with provided heroes, enemies, bullets, and map. Loads the texture for the
+   * game entities and initializes the BulletUpdater and executor.
+   *
+   * @param heroes List of heroes
+   * @param enemies List of enemies
+   * @param bullets List of bullets
+   * @param map Game map
+   */
   private void initGame(
       CopyOnWriteArrayList<Hero> heroes,
       CopyOnWriteArrayList<Enemy> enemies,
@@ -58,6 +81,10 @@ public class GameController {
     initBulletUpdaterAndExecutor();
   }
 
+  /**
+   * Initializes a new game with default heroes, enemies, bullets, and map. Loads the texture for
+   * the game entities and initializes the BulletUpdater and executor.
+   */
   private void initGame() {
     gameState =
         new GameState(
@@ -72,10 +99,23 @@ public class GameController {
     initBulletUpdaterAndExecutor();
   }
 
+  /**
+   * Initializes the game map.
+   *
+   * @return The initialized game map.
+   */
   private Map initMap() {
     return new Map((int) Config.ROWS, (int) Config.COLS);
   }
 
+  /**
+   * Initializes characters in the game.
+   *
+   * @param count The number of characters to initialize.
+   * @param l The lower bound of the random range for the x-coordinate.
+   * @param r The upper bound of the random range for the x-coordinate.
+   * @param type The type of character to initialize (1 for hero, 2 for enemy).
+   */
   private void initCharacter(int count, int l, int r, int type) {
     for (int i = 0; i < count; i++) {
       int x = MathUtils.random(l, r - 1);
@@ -97,6 +137,14 @@ public class GameController {
     }
   }
 
+  /**
+   * Initializes a hero character.
+   *
+   * @param x The x-coordinate of the hero.
+   * @param y The y-coordinate of the hero.
+   * @param i The index of the hero.
+   * @return The initialized hero.
+   */
   private Hero initHero(int x, int y, int i) {
     TextureManager textureManager = TextureManager.getInstance();
 
@@ -114,6 +162,14 @@ public class GameController {
     return hero;
   }
 
+  /**
+   * Initializes an enemy character.
+   *
+   * @param x The x-coordinate of the enemy.
+   * @param y The y-coordinate of the enemy.
+   * @param i The index of the enemy.
+   * @return The initialized enemy.
+   */
   private Enemy initEnemy(int x, int y, int i) {
     TextureManager textureManager = TextureManager.getInstance();
 
@@ -131,23 +187,31 @@ public class GameController {
     return enemy;
   }
 
+  /** Initializes the BulletUpdater and executor. */
   private void initBulletUpdaterAndExecutor() {
     bulletUpdater = new BulletUpdater(gameState);
     executor =
         new ScheduledThreadPoolExecutor(Config.INIT_ENEMY_COUNT + Config.INIT_HERO_COUNT + 1);
   }
 
+  /**
+   * Sets the game state and initializes the BulletUpdater and executor.
+   *
+   * @param gameState The game state to set.
+   */
   public void setGameState(GameState gameState) {
     this.gameState = gameState;
     initBulletUpdaterAndExecutor();
   }
 
+  /** Starts the game by starting the heroes, enemies, and bullets. */
   public void start() {
     startHero();
     startEnemy();
     startBullet();
   }
 
+  /** Starts the heroes by scheduling them with the executor. */
   public void startHero() {
     gameState
         .getHeroes()
@@ -157,6 +221,7 @@ public class GameController {
                     hero, 0, Config.INTERVAL_MILLI, TimeUnit.MILLISECONDS));
   }
 
+  /** Starts the enemies by scheduling them with the executor. */
   public void startEnemy() {
     gameState
         .getEnemies()
@@ -166,11 +231,13 @@ public class GameController {
                     enemy, 0, Config.INTERVAL_MILLI, TimeUnit.MILLISECONDS));
   }
 
+  /** Starts the bullets by scheduling the BulletUpdater with the executor. */
   public void startBullet() {
     executor.scheduleWithFixedDelay(
         bulletUpdater, 0, Config.INTERVAL_MILLI / 40, TimeUnit.MILLISECONDS);
   }
 
+  /** Stops the game by shutting down the executor. */
   public void stop() {
     executor.shutdown(); // Disable new tasks from being submitted
     try {
@@ -190,6 +257,7 @@ public class GameController {
     }
   }
 
+  /** Loads the textures for the game entities. */
   public void loadTexture() {
     TextureManager textureManager = TextureManager.getInstance();
     List<Texture> heroTextures = textureManager.getHeroTextures();
@@ -228,14 +296,29 @@ public class GameController {
     }
   }
 
+  /**
+   * Checks if all enemies are dead.
+   *
+   * @return True if all enemies are dead, false otherwise.
+   */
   public boolean isEnemyEmpty() {
     return gameState.getEnemies().stream().allMatch(Entity::isDead);
   }
 
+  /**
+   * Checks if all heroes are dead.
+   *
+   * @return True if all heroes are dead, false otherwise.
+   */
   public boolean isHeroEmpty() {
     return gameState.getHeroes().stream().allMatch(Entity::isDead);
   }
 
+  /**
+   * Handles a server event for a character moving.
+   *
+   * @param event The character move event to handle.
+   */
   public void handleServerEvent(CharacterMove event) {
     if (event.getType() == CharacterMove.Type.HERO_MOVE) {
       gameState
@@ -255,10 +338,20 @@ public class GameController {
     }
   }
 
+  /**
+   * Handles a server event for a character attacking.
+   *
+   * @param event The character attack event to handle.
+   */
   public void handleServerEvent(CharacterAttack event) {
     throw new UnsupportedOperationException();
   }
 
+  /**
+   * Handles a server event for a hero attacking.
+   *
+   * @param event The hero attack event to handle.
+   */
   public void handleServerEvent(HeroAttack event) {
     gameState
         .getHeroes()
@@ -270,6 +363,11 @@ public class GameController {
             });
   }
 
+  /**
+   * Handles a client event for a character moving.
+   *
+   * @param event The character move event to handle.
+   */
   public void handleClientEvent(CharacterMove event) {
     if (event.getType() == CharacterMove.Type.HERO_MOVE) {
       gameState
@@ -298,6 +396,11 @@ public class GameController {
     }
   }
 
+  /**
+   * Handles a client event for a character attacking.
+   *
+   * @param event The character attack event to handle.
+   */
   public void handleClientEvent(CharacterAttack event) {
     gameState
         .getBullets()
@@ -312,6 +415,11 @@ public class GameController {
                 TextureManager.getInstance().getBulletTexture()));
   }
 
+  /**
+   * Handles a client event for a hero attacking.
+   *
+   * @param event The hero attack event to handle.
+   */
   public void handleClientEvent(HeroAttack event) {
     throw new UnsupportedOperationException();
   }

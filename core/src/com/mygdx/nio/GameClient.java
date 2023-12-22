@@ -29,6 +29,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
+ * This class represents the game client in a multiplayer game. It is responsible for handling user
+ * input, communicating with the game server, and rendering the game state. It extends the
+ * BaseScreen class and implements the Runnable interface. It uses non-blocking I/O with Java's NIO
+ * package to communicate with the server. It uses Jackson for JSON serialization and
+ * deserialization. It uses LibGDX for rendering and user input handling.
+ *
  * @author Hades
  */
 public class GameClient extends BaseScreen implements Runnable {
@@ -38,6 +44,15 @@ public class GameClient extends BaseScreen implements Runnable {
   private final GameController gameController;
   private Hero currentHero;
 
+  /**
+   * Constructor for GameClient. Initializes the game client with the provided game instance, server
+   * address, and port. Establishes a connection to the game server and initializes the game. Starts
+   * a new thread for receiving messages from the server.
+   *
+   * @param game The game instance.
+   * @param serverAddress The address of the game server.
+   * @param port The port of the game server.
+   */
   public GameClient(MyGdxGame game, String serverAddress, int port) {
     super(game);
 
@@ -59,6 +74,13 @@ public class GameClient extends BaseScreen implements Runnable {
     new Thread(this).start();
   }
 
+  /**
+   * Establishes a connection to the game server. If the connection fails, it throws a
+   * RuntimeException.
+   *
+   * @param serverAddress The address of the game server.
+   * @param port The port of the game server.
+   */
   private void establishConnection(String serverAddress, int port) {
     try {
       socketChannel = SocketChannel.open();
@@ -78,6 +100,13 @@ public class GameClient extends BaseScreen implements Runnable {
     }
   }
 
+  /**
+   * Initializes the game by receiving the initial game state from the server. The game state is
+   * received as a JSON string and deserialized into a GameState object. The textures for the game
+   * entities are loaded.
+   *
+   * @throws IOException If an I/O error occurs.
+   */
   private void initGame() throws IOException {
     ObjectMapper objectMapper = new ObjectMapper();
     String s = receiveMessage();
@@ -90,6 +119,12 @@ public class GameClient extends BaseScreen implements Runnable {
     gameController.loadTexture();
   }
 
+  /**
+   * Sends a message to the game server. The message is sent as a JSON string.
+   *
+   * @param message The message to send.
+   * @throws IOException If an I/O error occurs.
+   */
   public void sendMessage(String message) throws IOException {
     ByteBuffer buffer = ByteBuffer.allocate(Config.BUFFER_SIZE);
     buffer.clear();
@@ -102,6 +137,12 @@ public class GameClient extends BaseScreen implements Runnable {
     System.out.println("Sent to server: " + message);
   }
 
+  /**
+   * Receives a message from the game server. The message is received as a JSON string.
+   *
+   * @return The received message.
+   * @throws IOException If an I/O error occurs.
+   */
   public String receiveMessage() throws IOException {
     ByteBuffer buffer = ByteBuffer.allocate(Config.BUFFER_SIZE);
     StringBuilder receivedMessage = new StringBuilder();
@@ -114,6 +155,13 @@ public class GameClient extends BaseScreen implements Runnable {
     return receivedMessage.toString();
   }
 
+  /**
+   * Handles a message received from the game server. The message is a JSON string that represents a
+   * game event. The event is deserialized and handled according to its type.
+   *
+   * @param msg The message to handle.
+   * @throws JsonProcessingException If an error occurs during JSON processing.
+   */
   private void handleMassage(String msg) throws JsonProcessingException {
     String[] msgs = msg.split("\\|");
     ObjectMapper objectMapper = new ObjectMapper();
@@ -138,6 +186,12 @@ public class GameClient extends BaseScreen implements Runnable {
     }
   }
 
+  /**
+   * Renders the game state. This method is called once per frame. It renders the map, heroes,
+   * enemies, and bullets. If all heroes or enemies are dead, it switches to the results screen.
+   *
+   * @param delta The time in seconds since the last frame.
+   */
   @Override
   public void render(float delta) {
     super.render(delta);
@@ -168,6 +222,10 @@ public class GameClient extends BaseScreen implements Runnable {
     game.batch.end();
   }
 
+  /**
+   * Disposes of all resources used by the game client. This method is called when the game client
+   * is no longer needed.
+   */
   @Override
   public void dispose() {
     super.dispose();
@@ -176,6 +234,10 @@ public class GameClient extends BaseScreen implements Runnable {
     shapeRenderer.dispose();
   }
 
+  /**
+   * The main loop for receiving messages from the game server. This method is run in a separate
+   * thread. It continuously receives messages from the server and handles them.
+   */
   @Override
   public void run() {
     try {
@@ -194,6 +256,10 @@ public class GameClient extends BaseScreen implements Runnable {
     }
   }
 
+  /**
+   * This class handles user input. It implements the InputProcessor interface from LibGDX. It
+   * handles key presses for moving the hero and mouse clicks for attacking.
+   */
   class InputHandler implements InputProcessor {
     private long lastTimeMove = TimeUtils.millis();
     private long lastTimeAttack = TimeUtils.millis();

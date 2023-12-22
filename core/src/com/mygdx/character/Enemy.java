@@ -11,10 +11,13 @@ import lombok.Setter;
 
 /**
  * This class represents an enemy character in the game. It extends the Character class and
- * implements the Runnable interface for multithreading. It contains properties for the game map,
- * the list of bullets and heroes. It also contains methods for setting the game map, bullets and
- * heroes, updating the enemy's state, and running the enemy's AI. The enemy's AI attacks the hero
- * with the minimum health points and moves randomly. The enemy can be controlled by AI.
+ * implements the Runnable interface for multithreading. It contains properties for the game state,
+ * the textures of the enemy and the bullet, and a flag for the enemy's death. It also contains
+ * methods for updating the enemy's state, running the enemy's AI, checking if the enemy is dead,
+ * and getting the bounding rectangle of the enemy. The enemy's state is updated by attacking the
+ * hero with the minimum health points and moving randomly. The enemy's AI is run in a separate
+ * thread to avoid blocking the main game thread. The enemy is dead if its health points are less
+ * than or equal to 0. The bounding rectangle of the enemy is used for collision detection.
  *
  * @author Hades
  */
@@ -44,7 +47,7 @@ public class Enemy extends Character implements Runnable {
 
   /**
    * This method updates the enemy's state by attacking the hero with the minimum health points and
-   * moving randomly.
+   * moving randomly. It synchronizes on the game map to avoid concurrent modification exceptions.
    */
   public void update() {
     attackMinHp(gameState.getBullets(), gameState.getHeroes());
@@ -54,8 +57,8 @@ public class Enemy extends Character implements Runnable {
   }
 
   /**
-   * This method runs the enemy's AI. If the enemy is dead, it changes the enemy's texture.
-   * Otherwise, it updates the enemy's state.
+   * This method runs the enemy's AI. If the enemy is dead, it does nothing. Otherwise, it updates
+   * the enemy's state.
    */
   @Override
   public void run() {
@@ -64,12 +67,23 @@ public class Enemy extends Character implements Runnable {
     }
   }
 
+  /**
+   * This method checks if the enemy is dead. The enemy is dead if its health points are less than
+   * or equal to 0.
+   *
+   * @return true if the enemy is dead, false otherwise.
+   */
   @JsonIgnore
   @Override
   public boolean isDead() {
     return super.isDead();
   }
 
+  /**
+   * This method returns the bounding rectangle of the enemy. It is used for collision detection.
+   *
+   * @return The bounding rectangle of the enemy.
+   */
   @JsonIgnore
   @Override
   public Rectangle getBound() {

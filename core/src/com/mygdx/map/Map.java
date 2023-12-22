@@ -44,9 +44,9 @@ public class Map implements Serializable {
    * This method gets the value of a cell. If the specified coordinates are outside the map, it
    * returns 2.
    *
-   * @param x The x-coordinate.
-   * @param y The y-coordinate.
-   * @return The value of the cell.
+   * @param x The x-coordinate. Must be a multiple of Config.CELL_SIZE.
+   * @param y The y-coordinate. Must be a multiple of Config.CELL_SIZE.
+   * @return The value of the cell. Returns 2 if the specified coordinates are outside the map.
    */
   public int get(int x, int y) {
     assert x % Config.CELL_SIZE == 0 && y % Config.CELL_SIZE == 0;
@@ -62,9 +62,9 @@ public class Map implements Serializable {
    * This method sets the value of a cell. If the specified coordinates are outside the map, it does
    * nothing.
    *
-   * @param x The x-coordinate.
-   * @param y The y-coordinate.
-   * @param value The value to set.
+   * @param x The x-coordinate. Must be a multiple of Config.CELL_SIZE.
+   * @param y The y-coordinate. Must be a multiple of Config.CELL_SIZE.
+   * @param value The value to set. Must be 1 or 0.
    */
   public void set(int x, int y, int value) {
     assert x % Config.CELL_SIZE == 0 && y % Config.CELL_SIZE == 0 && (value == 1 || value == 0);

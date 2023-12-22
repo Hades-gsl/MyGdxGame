@@ -17,12 +17,15 @@ import lombok.Setter;
 
 /**
  * This class represents a hero character in the game. It extends the Character class and implements
- * the Runnable interface for multithreading. It contains properties for the game map, the list of
- * bullets and enemies, and a flag for AI control. It also contains methods for setting the game
- * map, bullets and enemies, updating the hero's state, rendering the hero's border, and running the
- * hero's AI. The hero can attack by clicking, move by keyboard, or be controlled by AI. The hero's
- * AI attacks the enemy with the minimum health points and moves randomly. The hero's border is
- * rendered with a color specified in the game configuration.
+ * the Runnable interface for multithreading. It contains properties for the game state, the
+ * textures of the hero and the bullet, and a flag for AI control. It also contains methods for
+ * updating the hero's state, rendering the hero's border, running the hero's AI, checking if the
+ * hero is dead, and getting the bounding rectangle of the hero. The hero's state is updated by
+ * attacking a position, moving the hero, or attacking the enemy with the minimum health points and
+ * moving randomly. The hero's border is rendered with a color specified in the game configuration.
+ * The hero's AI is run in a separate thread to avoid blocking the main game thread. The hero is
+ * dead if its health points are less than or equal to 0. The bounding rectangle of the hero is used
+ * for collision detection.
  *
  * @author Hades
  */
@@ -32,7 +35,7 @@ import lombok.Setter;
 @JsonIgnoreProperties({"gameState", "bulletTexture", "charaterTexture", "dieTexture", "sprite"})
 public class Hero extends Character implements Runnable {
   private static final long serialVersionUID = 1L;
-  private boolean isAI = true;
+  private boolean isAI = true; // Flag indicating if the hero is controlled by AI.
 
   /**
    * Constructor for the Hero class. It initializes the hero's position, health points, attack
@@ -62,10 +65,13 @@ public class Hero extends Character implements Runnable {
   }
 
   /**
-   * This method updates the hero's position by moving the hero.
+   * This method updates the hero's position by moving the hero. The movement is done in increments
+   * of the cell size defined in the game configuration. The method first checks if the new position
+   * is within the game map and is not occupied. If these conditions are met, the hero is moved to
+   * the new position and a CharacterMove event is generated to notify observers of the hero's move.
    *
-   * @param dx The change in the x-coordinate.
-   * @param dy The change in the y-coordinate.
+   * @param dx The change in the x-coordinate, must be a multiple of the cell size.
+   * @param dy The change in the y-coordinate, must be a multiple of the cell size.
    */
   public void update(int dx, int dy) {
     assert dx % Config.CELL_SIZE == 0 && dy % Config.CELL_SIZE == 0;
@@ -126,12 +132,23 @@ public class Hero extends Character implements Runnable {
     }
   }
 
+  /**
+   * This method checks if the hero is dead. The hero is dead if its health points are less than or
+   * equal to 0.
+   *
+   * @return true if the hero is dead, false otherwise.
+   */
   @JsonIgnore
   @Override
   public boolean isDead() {
     return super.isDead();
   }
 
+  /**
+   * This method returns the bounding rectangle of the hero. It is used for collision detection.
+   *
+   * @return The bounding rectangle of the hero.
+   */
   @JsonIgnore
   @Override
   public Rectangle getBound() {

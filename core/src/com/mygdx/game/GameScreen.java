@@ -28,9 +28,15 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * This class represents the game screen where the game is played. It extends the AbstractGameScreen
- * class and implements the game logic. It manages the game entities (heroes, enemies, bullets), the
- * game map, and the game state. It also handles user input and game rendering.
+ * The GameScreen class represents the main screen of the game where the gameplay takes place. It
+ * extends the BaseScreen class and implements the game logic. It manages the game entities (heroes,
+ * enemies, bullets), the game map, and the game state. It also handles user input and game
+ * rendering. It provides functionality for saving the game state and starting a replay of the game.
+ * It uses a ShapeRenderer to render the game entities and a Music object to play background music.
+ * It also uses a GameController to control the game logic. The game state is saved to a file and
+ * can be loaded later. The game replay is also saved to a file and can be viewed later. The game
+ * replay is recorded by serializing the game state to a file at each frame. The game replay is
+ * played back by deserializing the game state from the file and rendering it.
  *
  * @author Hades
  */
@@ -235,11 +241,23 @@ public class GameScreen extends BaseScreen {
     }
   }
 
+  /**
+   * This method is called when the screen becomes the current screen for rendering. It logs the
+   * start of the game screen.
+   */
   @Override
   public void show() {
     Gdx.app.log("GameScreen", "start");
   }
 
+  /**
+   * This method is called every frame to render the game state. It first records the game state if
+   * recording is enabled. Then it calls the parent's render method, renders the map, the heroes,
+   * the enemies and the bullets, and updates and draws the stage. Finally, it checks if the game is
+   * over.
+   *
+   * @param delta The time in seconds since the last frame.
+   */
   @Override
   public void render(float delta) {
     record();
@@ -291,6 +309,11 @@ public class GameScreen extends BaseScreen {
     gameController.getGameState().getBullets().forEach(bullet -> bullet.render(game.batch));
   }
 
+  /**
+   * This method is called when the screen is no longer the current screen. It stops the game
+   * controller, disposes the shape renderer and the background music, and closes the file output
+   * stream and the object output stream if they are open. It logs the end of the game screen.
+   */
   @Override
   public void dispose() {
     super.dispose();

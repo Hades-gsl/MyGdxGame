@@ -47,10 +47,13 @@ public abstract class Entity implements Serializable {
   }
 
   /**
-   * This method moves the entity to a new position.
+   * This method moves the entity to a new position. The new position must be a multiple of the cell
+   * size, as defined in the Config class. This is to ensure that the entity stays within the grid
+   * of the game. If the new position is not a multiple of the cell size, an assertion error will be
+   * thrown.
    *
-   * @param x The new x-coordinate.
-   * @param y The new y-coordinate.
+   * @param x The new x-coordinate. Must be a multiple of Config.CELL_SIZE.
+   * @param y The new y-coordinate. Must be a multiple of Config.CELL_SIZE.
    */
   public void move(float x, float y) {
     assert x % Config.CELL_SIZE == 0 && y % Config.CELL_SIZE == 0;
