@@ -74,9 +74,9 @@ class EntityTest {
 
   @Test
   void move() {
-    entity.move(1, 1);
-    assertEquals(entity.getX(), 1);
-    assertEquals(entity.getY(), 1);
+    entity.move(32, 32);
+    assertEquals(entity.getX(), 32);
+    assertEquals(entity.getY(), 32);
   }
 
   @Test

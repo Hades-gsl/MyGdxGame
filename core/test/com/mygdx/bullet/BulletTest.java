@@ -67,10 +67,10 @@ public class BulletTest {
     @Override
     public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
       return Stream.of(
-          Arguments.of(-32f, 1f),
-          Arguments.of(1f, -32f),
-          Arguments.of(1f, Config.MAP_HEIGHT),
-          Arguments.of(Config.MAP_WIDTH, 1f));
+          Arguments.of(-32f, 32f),
+          Arguments.of(32f, -32f),
+          Arguments.of(32f, Config.MAP_HEIGHT),
+          Arguments.of(Config.MAP_WIDTH, 32f));
     }
   }
 }

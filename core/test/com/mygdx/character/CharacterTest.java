@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.badlogic.gdx.graphics.Texture;
 import com.mygdx.bullet.Bullet;
 import com.mygdx.config.Config;
+import com.mygdx.controller.GameState;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.map.Map;
 import com.mygdx.testRunner.TestRunner;
@@ -37,6 +38,7 @@ class CharacterTest {
             10,
             new Texture(Config.HERO_PATH + " (1).png"),
             new Texture(Config.BULLET_PATH));
+    character.setGameState(new GameState());
     enemy =
         new Character(
             0,

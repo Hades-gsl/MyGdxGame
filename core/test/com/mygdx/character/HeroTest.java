@@ -1,27 +1,26 @@
 package com.mygdx.character;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.badlogic.gdx.graphics.Texture;
 import com.mygdx.bullet.Bullet;
 import com.mygdx.config.Config;
+import com.mygdx.controller.GameState;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.map.Map;
 import com.mygdx.testRunner.TestRunner;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 class HeroTest {
   static TestRunner testRunner;
   Hero hero;
   Map map;
-  List<Bullet> bullets;
-  List<Enemy> enemies;
+  CopyOnWriteArrayList<Bullet> bullets;
+  CopyOnWriteArrayList<Enemy> enemies;
 
   @BeforeAll
   static void setUpBeforeClass() throws Exception {
@@ -43,18 +42,19 @@ class HeroTest {
             10,
             new Texture(Config.HERO_PATH + " (1).png"),
             new Texture(Config.BULLET_PATH));
+    bullets = new CopyOnWriteArrayList<>();
+    CopyOnWriteArrayList<Hero> heroes = new CopyOnWriteArrayList<>();
+    enemies = new CopyOnWriteArrayList<>();
     map = new Map(10, 10);
-    bullets = new ArrayList<>();
-    enemies = new ArrayList<>();
-    hero.set(map, bullets, enemies);
+    hero.setGameState(new GameState(heroes, enemies, bullets, map));
     map.set(0, 0, 1);
   }
 
   @Test
   void set() {
-    assertEquals(map, hero.getMap());
-    assertEquals(bullets, hero.getBullets());
-    assertEquals(enemies, hero.getEnemies());
+    assertEquals(map, hero.getGameState().getMap());
+    assertEquals(bullets, hero.getGameState().getBullets());
+    assertEquals(enemies, hero.getGameState().getEnemies());
   }
 
   @Test
