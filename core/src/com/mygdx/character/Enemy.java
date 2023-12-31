@@ -2,8 +2,6 @@ package com.mygdx.character;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Rectangle;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +22,15 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonIgnoreProperties({"gameState", "bulletTexture", "charaterTexture", "dieTexture", "sprite"})
+@JsonIgnoreProperties({
+  "gameState",
+  "bulletTexture",
+  "charaterTexture",
+  "dieTexture",
+  "sprite",
+  "dead",
+  "bound"
+})
 public class Enemy extends Character implements Runnable {
   private static final long serialVersionUID = 1L;
 
@@ -65,28 +71,5 @@ public class Enemy extends Character implements Runnable {
     if (!isDead()) {
       update();
     }
-  }
-
-  /**
-   * This method checks if the enemy is dead. The enemy is dead if its health points are less than
-   * or equal to 0.
-   *
-   * @return true if the enemy is dead, false otherwise.
-   */
-  @JsonIgnore
-  @Override
-  public boolean isDead() {
-    return super.isDead();
-  }
-
-  /**
-   * This method returns the bounding rectangle of the enemy. It is used for collision detection.
-   *
-   * @return The bounding rectangle of the enemy.
-   */
-  @JsonIgnore
-  @Override
-  public Rectangle getBound() {
-    return super.getBound();
   }
 }

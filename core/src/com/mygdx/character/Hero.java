@@ -4,8 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mygdx.config.Config;
 import com.mygdx.event.CharacterMove;
@@ -32,7 +30,15 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonIgnoreProperties({"gameState", "bulletTexture", "charaterTexture", "dieTexture", "sprite"})
+@JsonIgnoreProperties({
+  "gameState",
+  "bulletTexture",
+  "charaterTexture",
+  "dieTexture",
+  "sprite",
+  "dead",
+  "bound"
+})
 public class Hero extends Character implements Runnable {
   private static final long serialVersionUID = 1L;
   private boolean isAI = true; // Flag indicating if the hero is controlled by AI.
@@ -130,28 +136,5 @@ public class Hero extends Character implements Runnable {
     if (isAI && !isDead()) {
       update();
     }
-  }
-
-  /**
-   * This method checks if the hero is dead. The hero is dead if its health points are less than or
-   * equal to 0.
-   *
-   * @return true if the hero is dead, false otherwise.
-   */
-  @JsonIgnore
-  @Override
-  public boolean isDead() {
-    return super.isDead();
-  }
-
-  /**
-   * This method returns the bounding rectangle of the hero. It is used for collision detection.
-   *
-   * @return The bounding rectangle of the hero.
-   */
-  @JsonIgnore
-  @Override
-  public Rectangle getBound() {
-    return super.getBound();
   }
 }
