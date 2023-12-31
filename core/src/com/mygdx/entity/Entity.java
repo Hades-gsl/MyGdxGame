@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import com.mygdx.config.Config;
 import java.io.Serializable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,13 +50,8 @@ public abstract class Entity implements Serializable {
    * size, as defined in the Config class. This is to ensure that the entity stays within the grid
    * of the game. If the new position is not a multiple of the cell size, an assertion error will be
    * thrown.
-   *
-   * @param x The new x-coordinate. Must be a multiple of Config.CELL_SIZE.
-   * @param y The new y-coordinate. Must be a multiple of Config.CELL_SIZE.
    */
   public void move(float x, float y) {
-    assert x % Config.CELL_SIZE == 0 && y % Config.CELL_SIZE == 0;
-
     setX(x);
     setY(y);
   }
