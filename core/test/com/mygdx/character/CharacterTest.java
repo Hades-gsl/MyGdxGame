@@ -97,7 +97,7 @@ class CharacterTest {
   void randomMove() {
     Map map = new Map((int) Config.ROWS, (int) Config.COLS);
     map.set((int) character.getX(), (int) character.getY(), 1);
-    character.randomMove(map, true);
+    character.randomMove(map, false);
     assertEquals(1, map.get((int) character.getX(), (int) character.getY()));
   }
 
