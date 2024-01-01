@@ -82,6 +82,7 @@ public class Bullet extends Entity {
               character.setHp(character.getHp() - getAtk());
               sound.play();
               setHp(0);
+              Gdx.app.log("Bullet", "hit " + character.getId() + ", hp: " + character.getHp());
 
               if (character.isDead()) {
                 character.changeDieTexture();
