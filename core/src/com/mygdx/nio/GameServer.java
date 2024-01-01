@@ -254,7 +254,9 @@ public class GameServer extends BaseScreen implements GameObserver, Runnable {
         clientChannel.write(buffer);
       }
 
-      System.out.println("Sent to client " + clientId + ": " + message);
+      if (!message.isEmpty()) {
+        System.out.println("Sent to client " + clientId + ": " + message);
+      }
     }
   }
 
